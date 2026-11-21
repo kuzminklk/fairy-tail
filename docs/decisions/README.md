@@ -10,5 +10,6 @@ resulting behavior; decisions explain why it is built that way.
 - [0004. Responsive image pipeline](0004-responsive-image-pipeline.md)
 - [0005. Native dialogs](0005-native-dialogs.md)
 - [0006. Language policy](0006-language-policy.md)
+- [0007. Graduated stage image loading](0007-graduated-image-loading.md)
 
 Create a new record from [`_template.md`](_template.md).

@@ -11,12 +11,14 @@ section would make cross-fades and lazy loading harder to coordinate.
 ## Decision
 
 Use one fixed `.stage` element behind the story, containing one layer per
-section. The stage is sized with `100lvh` so mobile browser chrome hiding or
-reappearing while scrolling does not resize it. `script.js` selects the active
-section at a 42% focus line, loads the matching photograph into that layer, and
-cross-fades opacity between layers. Only the active layer and its immediate
-neighbours are requested. Each layer paints a 24px LQIP from inline CSS before
-the sharp image loads.
+section. The stage box follows the visible viewport, while every photograph is
+sized to the large viewport (`100lvh`): mobile browser chrome can hide or
+reappear without rescaling the picture, and the extra area is clipped by the
+stage. `script.js` selects the active section at a 42% focus line, loads the
+matching photograph into that layer, and cross-fades opacity between layers.
+Only the active layer and its immediate neighbours get a preview; the
+high-resolution tier follows when scrolling settles. Each layer paints a 24px
+LQIP from inline CSS before the sharp image loads.
 
 ## Alternatives
 
@@ -32,11 +34,12 @@ the sharp image loads.
 - One photograph is visible at a time; the coda hides the stage entirely.
 - Images are requested progressively; slow connections see the LQIP.
 - The active section depends on JavaScript; without it the LQIP cover remains.
-- The slow drift is one animation on the stage, not on individual layers, so
-  cross-fading photographs always share the same scale and cannot jump in
-  size when a chapter changes or when scrolling back up.
-- The stage keeps the large-viewport height while mobile browser chrome
-  changes; the photograph does not resize when scrolling down and back up.
+- The stage is static. An earlier full-screen drift animation was removed
+  because it cost mobile GPU time and could expose clipping seams; all
+  cross-fading layers now share the stable stage box.
+- Photographs keep the large-viewport height while mobile browser chrome
+  changes; the picture does not resize or reveal a strip when scrolling down
+  and back up.
 - Active-layer selection and photo descriptions must stay synchronized with
   the section markup.
 

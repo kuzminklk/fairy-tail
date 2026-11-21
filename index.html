@@ -31,13 +31,21 @@
 		<link rel="preload" href="fonts/cormorant-garamond-italic-cyrillic.woff2" as="font" type="font/woff2" crossorigin />
 		<link rel="preload" href="fonts/manrope-cyrillic.woff2" as="font" type="font/woff2" crossorigin />
 
-		<!-- The cover photograph is the first thing a visitor should see -->
+		<!-- Preload the cover preview only; the high-resolution tier follows
+		     after the first idle period (see script.js). -->
 		<link
 			rel="preload"
 			as="image"
 			href="assets/photos/13-pines-2400.webp"
-			imagesrcset="assets/photos/13-pines-900.webp 600w, assets/photos/13-pines-1800.webp 1200w, assets/photos/13-pines-2400.webp 1600w, assets/photos/13-pines-3600.webp 2400w, assets/photos/13-pines-full.webp 3648w"
-			imagesizes="(max-aspect-ratio: 2/3) 150vw, 100vw"
+			media="(min-width: 861px)"
+			type="image/webp"
+			fetchpriority="high"
+		/>
+		<link
+			rel="preload"
+			as="image"
+			href="assets/photos/13-pines-900.webp"
+			media="(max-width: 860px)"
 			type="image/webp"
 			fetchpriority="high"
 		/>

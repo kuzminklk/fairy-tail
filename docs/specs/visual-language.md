@@ -26,10 +26,10 @@ poetry over changing images, on screens from small phones to wide monitors.
   readable without hiding the image.
 - Responsive breakpoints: 1120px, 860px, 640px, and 380px; a dedicated short
   landscape rule keeps chapter content below the fixed header.
-- Motion: chapter content reveals with staggered fades, the stage drifts
-  slowly, and photographs cross-fade between chapters. The drift belongs to
-  the stage rather than to individual layers, so both photographs in a
-  cross-fade share one scale and the background cannot jump or shrink.
+- Motion: chapter content reveals with staggered fades and photographs
+  cross-fade between chapters. The stage itself is static: no full-screen
+  transform animation runs while scrolling, which keeps mobile repainting
+  predictable.
 - Reduced motion: animation and smooth scrolling are suppressed; reveal
   content is shown immediately.
 - Accessibility: skip link, semantic headings, visible focus outlines, native
@@ -54,6 +54,6 @@ poetry over changing images, on screens from small phones to wide monitors.
 
 - Every chapter's verse is readable over its photograph at 320px and 1440px.
 - Short landscape viewports do not place chapter titles under the fixed header.
-- Reduced motion removes reveals, drift, and smooth scrolling.
+- Reduced motion removes reveals and smooth scrolling.
 - Focus is visible on all links, buttons, dots, and dialog controls.
 - The no-JavaScript and reduced-motion states remain fully legible.

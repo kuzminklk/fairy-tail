@@ -220,18 +220,14 @@ figure {
 
 .stage {
 	position: fixed;
-	top: 0;
-	left: 0;
-	/* 100lvh is the large viewport: it does not change when mobile browser
-	   chrome hides or reappears during scrolling. Using inset/100dvh here made
-	   the fixed photograph resize on the first upward scroll. */
-	width: 100%;
-	height: 100vh;
-	height: 100lvh;
+	inset: 0;
 	z-index: 0;
 	overflow: hidden;
+	overflow: clip;
+	/* Extra guard against mobile compositing leaking image pixels outside the
+	   fixed stage; the stage must always end exactly at the viewport edge. */
+	clip-path: inset(0);
 	background: #050806;
-	animation: stage-drift 28s var(--ease-soft) both;
 	transition: opacity 0.9s var(--ease);
 	pointer-events: none;
 }
@@ -274,32 +270,46 @@ body.is-coda .chapter-rail {
 .stage__layer::before {
 	content: "";
 	position: absolute;
-	inset: -8%;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100vh;
+	height: 100lvh;
 	background-image: var(--lqip);
 	background-position: var(--pos, 50% 45%);
 	background-size: cover;
 	filter: blur(26px) saturate(0.9);
-	transform: scale(1.12);
 }
 
+/* The stage box follows the visible viewport, but the photograph is sized to
+   the large viewport (100lvh). Mobile browser chrome can then hide or appear
+   without rescaling the picture; the extra area is simply clipped. */
 .stage__layer picture,
 .stage__layer img {
 	position: absolute;
-	inset: 0;
+	top: 0;
+	left: 0;
 	width: 100%;
-	height: 100%;
+	height: 100vh;
+	height: 100lvh;
 }
 
 .stage__layer img {
 	object-fit: cover;
 	object-position: var(--pos, 50% 45%);
 	opacity: 0;
-	transition: opacity 1.6s var(--ease-soft);
+	transition: opacity 1.2s var(--ease-soft);
 	will-change: opacity;
 }
 
-.stage__layer.is-loaded img {
+/* Preview and high-resolution renditions are stacked; each fades in when its
+   own file is decoded. */
+.stage__layer img.is-visible {
 	opacity: 1;
+}
+
+.stage__layer img.stage-img--high {
+	transition-duration: 0.8s;
 }
 
 /* Without JavaScript no layer receives .is-active; keep the cover placeholder
@@ -308,19 +318,6 @@ html:not(.js) .stage__layer:first-child {
 	z-index: 2;
 	opacity: 1;
 	visibility: visible;
-}
-
-/* Very slow Ken Burns drift, applied once to the whole stage rather than to
-   individual layers. Every photograph therefore shares the same scale during
-   a cross-fade: swapping the layer never changes the zoom or produces a
-   size jump when scrolling down and back up. */
-@keyframes stage-drift {
-	from {
-		transform: scale(1.035) translate3d(0, 0, 0);
-	}
-	to {
-		transform: scale(1.12) translate3d(-1.2%, -1.4%, 0);
-	}
 }
 
 /* Readability scrim: dark on the text side, photo still visible on the other */
@@ -1868,11 +1865,6 @@ dialog[open]::backdrop {
 		animation-duration: 0.01ms !important;
 		animation-iteration-count: 1 !important;
 		transition-duration: 0.01ms !important;
-	}
-
-	.stage {
-		animation: none !important;
-		transform: none !important;
 	}
 
 	html.js .scene__head,

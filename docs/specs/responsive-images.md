@@ -22,16 +22,23 @@ made landscape and Retina displays look soft.
   browsers without WebP.
 - The browser chooses the file from actual pixel-width descriptors. WebP is
   used when supported.
-- The stage is `object-fit: cover`. Its height is the large viewport
-  (`100lvh`), so mobile browser chrome hiding or reappearing does not resize
-  the photograph. Its `sizes` is `max(100vw, stageHeight × image ratio)`,
-  where portrait photographs use 2:3 and the single landscape photograph uses
-  3:2. This accounts for the cover crop, which is wider than the viewport on
-  portrait phones.
+- Stage photographs are loaded in two tiers. A small preview (900px on
+  phones, 2400px on wider screens) is requested immediately for the active
+  chapter and its neighbours. The high-resolution rendition is requested only
+  after scrolling has been quiet for about a quarter of a second.
+- Only the active chapter keeps a high-resolution image. When the reader moves
+  to another chapter, the previous high-resolution layer is released after the
+  cross-fade; previews more than one chapter away are released as well.
+- The stage box follows the visible viewport; its photographs are
+  `object-fit: cover` and use a stable `100lvh` height, so mobile browser
+  chrome hiding or reappearing does not resize the picture. Their `sizes` is
+  `max(100vw, largeViewportHeight × image ratio)`, where portrait photographs
+  use 2:3 and the single landscape photograph uses 3:2. This accounts for the
+  cover crop, which is wider than the viewport on portrait phones.
 - `sizes` is recomputed after window resize or device rotation, so a rotated
   phone upgrades to a suitable file.
-- Only the active chapter and its neighbours are requested. Other layers show
-  their LQIP until needed.
+- Fast scrolling therefore requests preview files only; the sharp image is
+  decoded once the reader settles on a chapter.
 - The lightbox uses the same high-resolution `srcset` with a display-size hint.
 - The cover WebP is preloaded with matching width descriptors.
 
@@ -42,9 +49,12 @@ made landscape and Retina displays look soft.
 - `assets/photos/manifest.json` records dimensions, byte sizes, paths, and
   average colors.
 - `renditionWidths()` in `script.js` maps portrait and landscape slugs to
-  actual widths; `webpSrcset()` and `jpgSrcset()` build candidates;
-  `stageSizes()` reads the stage box and `lightboxSizes()` calculates the
-  lightbox hint.
+  actual widths; `webpSrcset()` and `jpgSrcset()` build the high-resolution
+  candidates; `stageSizes()` reads a hidden `100lvh` probe and
+  `lightboxSizes()` calculates the lightbox hint.
+- `loadPreview()`, `loadHigh()` and `scheduleStageCleanup()` in `script.js`
+  implement the graduated tiers; `lastScrollAt` gates the high-resolution
+  request until scrolling stops.
 - Full-size WebP is not an upscale; it uses the original pixel dimensions.
 - The image pipeline is explained in
   [0004. Responsive image pipeline](../decisions/0004-responsive-image-pipeline.md).
@@ -63,4 +73,8 @@ made landscape and Retina displays look soft.
   files: 68 legacy renditions, 68 high-resolution renditions, and 17 LQIP.
 - Scrolling down and back up on a mobile device does not resize the stage
   photograph or re-select a smaller rendition.
+- A fast scroll requests preview files only; after it stops, exactly one
+  high-resolution image is requested for the visible chapter.
+- At most the active high-resolution layer and three preview layers remain in
+  the DOM after cleanup.
 - No browser console errors, failed requests, or missing files.

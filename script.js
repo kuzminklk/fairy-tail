@@ -54,12 +54,8 @@
 	/* Stage: lazy full-screen photographs                                    */
 	/* ---------------------------------------------------------------------- */
 
-	const stage = document.querySelector(".stage")
 	const layers = Array.from(document.querySelectorAll(".stage__layer"))
 	const layerByKey = new Map(layers.map((layer) => [layer.dataset.layer, layer]))
-
-	/** Stage layers whose real photograph has been requested already. */
-	const requestedLayers = new Set()
 
 	/* The one landscape frame in the collection. All other photographs are
 	   2:3 portraits. Their real pixel widths differ, so width descriptors must
@@ -100,62 +96,196 @@
 		].join(", ")
 	}
 
+	/*
+	 * The stage photos are sized with 100lvh, which is constant while mobile
+	 * browser chrome hides or reappears. Measure that large viewport once with a
+	 * hidden probe instead of reading window.innerHeight (which changes).
+	 */
+	const viewportProbe = document.createElement("div")
+	viewportProbe.setAttribute("aria-hidden", "true")
+	viewportProbe.style.cssText =
+		"position:fixed;top:0;left:0;width:0;height:100vh;height:100lvh;visibility:hidden;pointer-events:none;"
+	document.body.appendChild(viewportProbe)
+
 	/**
 	 * The stage photo is object-fit: cover. On a portrait phone it is scaled by
-	 * the stage height, so its rendered width is stageHeight × imageRatio —
+	 * the large viewport height, so its rendered width is height × imageRatio —
 	 * usually larger than 100vw. Passing that exact width to `sizes` stops the
 	 * browser from under-selecting a small file and keeps the landscape view
 	 * sharp.
-	 *
-	 * Read the stage box rather than window.innerHeight: `.stage` uses 100lvh,
-	 * which stays constant while mobile browser chrome hides and reappears.
 	 */
 	function stageSizes(slug) {
 		const viewportWidth = window.innerWidth
-		// clientHeight is the untransformed layout height; getBoundingClientRect
-		// would include the stage drift scale and make `sizes` drift with it.
-		const stageHeight = stage?.clientHeight || window.innerHeight
+		const stageHeight = viewportProbe.clientHeight || window.innerHeight
 		const imageRatio = isLandscape(slug) ? 3 / 2 : 2 / 3
 		const renderedWidth = Math.max(viewportWidth, stageHeight * imageRatio)
-		return `${Math.ceil(renderedWidth)}px`
+		// Floor rather than ceil: a one-pixel rounding-up can push the browser
+		// to the next rendition tier and double the decoded memory for no visible
+		// gain. A sub-pixel shortfall is imperceptible.
+		return `${Math.max(1, Math.floor(renderedWidth))}px`
+	}
+
+	/* ---------------------------------------------------------------------- */
+	/* Graduated stage photographs                                            */
+	/* ---------------------------------------------------------------------- */
+
+	/*
+	 * Each layer is loaded in two steps:
+	 *
+	 *   1. a small preview as soon as the chapter is active or adjacent, so
+	 *      scrolling always has something immediately available;
+	 *   2. a high-resolution rendition (up to the original file) only after
+	 *      scrolling has settled. The preview stays below it and is reused if the
+	 *      high-resolution image is released again.
+	 *
+	 * High-resolution layers are released when the reader moves on. Without this
+	 * a fast scroll would decode dozens of 30–80 MB surfaces and exhaust mobile
+	 * memory, which was the cause of the stutter.
+	 */
+	const layerMedia = new Map()
+
+	const HIGH_RES_DELAY = 240
+	const STAGE_CLEANUP_DELAY = 1900
+	let lastScrollAt = performance.now()
+	let highResolutionTimer = 0
+	let stageCleanupTimer = 0
+
+	function mediaFor(layer) {
+		let media = layerMedia.get(layer)
+		if (!media) {
+			media = { preview: null, high: null, highRequested: false }
+			layerMedia.set(layer, media)
+		}
+		return media
+	}
+
+	function previewFileBase() {
+		// Desktop previews are larger because the full-screen crop is wide; phones
+		// use the smallest rendition to keep fast scrolling cheap.
+		return window.innerWidth > 860 ? "2400" : "900"
 	}
 
 	/**
-	 * Inject a responsive <picture> into a stage layer and fade it in when the
-	 * file is ready. The LQIP painted by CSS sits underneath, so the transition
-	 * is from a blurred colour field to the sharp photograph.
+	 * Build a stacked <picture> for one layer. The preview is a single small
+	 * file; the high-resolution tier uses the full responsive candidates and is
+	 * only requested after an idle period.
 	 */
-	function loadLayer(layer) {
-		if (!layer || requestedLayers.has(layer.dataset.layer)) return
-		requestedLayers.add(layer.dataset.layer)
-
-		const slug = layer.dataset.photo
-		const sizes = stageSizes(slug)
+	function buildStagePicture(slug, tier) {
 		const picture = document.createElement("picture")
 		const source = document.createElement("source")
 		const img = document.createElement("img")
+		const sizes = stageSizes(slug)
 
+		picture.className = `stage-picture stage-picture--${tier}`
 		source.type = "image/webp"
-		source.srcset = webpSrcset(slug)
 		source.sizes = sizes
-
-		img.src = `assets/photos/${slug}-2400.jpg`
-		img.srcset = jpgSrcset(slug)
 		img.sizes = sizes
 		img.alt = ""
 		img.decoding = "async"
 		img.loading = "eager"
-		img.fetchPriority = layer.dataset.layer === "cover" ? "high" : "auto"
 
-		const markLoaded = () => layer.classList.add("is-loaded")
-		img.addEventListener("load", markLoaded, { once: true })
-		img.addEventListener("error", markLoaded, { once: true })
+		if (tier === "preview") {
+			const base = previewFileBase()
+			source.srcset = `assets/photos/${slug}-${base}.webp`
+			img.src = `assets/photos/${slug}-${base}.jpg`
+			img.fetchPriority = "auto"
+		} else {
+			source.srcset = webpSrcset(slug)
+			img.src = `assets/photos/${slug}-2400.jpg`
+			img.srcset = jpgSrcset(slug)
+			img.fetchPriority = "low"
+		}
 
+		img.className = `stage-img stage-img--${tier}`
 		picture.append(source, img)
-		layer.append(picture)
+		return { picture, img }
+	}
 
-		// Cached images may already be complete before listeners attach.
-		if (img.complete) markLoaded()
+	function loadPreview(layer) {
+		if (!layer) return
+		const media = mediaFor(layer)
+		if (media.preview) return
+
+		const { picture, img } = buildStagePicture(layer.dataset.photo, "preview")
+		media.preview = picture
+
+		const reveal = () => img.classList.add("is-visible")
+		img.addEventListener("load", reveal, { once: true })
+
+		// A preview always sits below a high-resolution image.
+		layer.prepend(picture)
+		if (img.complete && img.naturalWidth) reveal()
+	}
+
+	function unloadPreview(layer) {
+		const media = layerMedia.get(layer)
+		if (!media?.preview) return
+		media.preview.remove()
+		media.preview = null
+	}
+
+	function loadHigh(layer) {
+		if (!layer) return
+		const media = mediaFor(layer)
+		if (media.high || media.highRequested) return
+		media.highRequested = true
+
+		const { picture, img } = buildStagePicture(layer.dataset.photo, "high")
+		media.high = picture
+
+		const reveal = () => {
+			img.classList.add("is-visible")
+			media.highRequested = false
+		}
+		const fail = () => {
+			media.highRequested = false
+			picture.remove()
+			media.high = null
+		}
+
+		img.addEventListener("load", reveal, { once: true })
+		img.addEventListener("error", fail, { once: true })
+		layer.append(picture)
+		if (img.complete && img.naturalWidth) reveal()
+	}
+
+	function unloadHigh(layer) {
+		const media = layerMedia.get(layer)
+		if (!media?.high) return
+		media.high.remove()
+		media.high = null
+		media.highRequested = false
+	}
+
+	function scheduleHighResolution() {
+		window.clearTimeout(highResolutionTimer)
+		highResolutionTimer = window.setTimeout(() => {
+			if (performance.now() - lastScrollAt < 200) {
+				scheduleHighResolution()
+				return
+			}
+			if (body.classList.contains("is-coda")) return
+			loadHigh(layerByKey.get(activeLayerKey))
+		}, HIGH_RES_DELAY)
+	}
+
+	function scheduleStageCleanup(index) {
+		window.clearTimeout(stageCleanupTimer)
+		stageCleanupTimer = window.setTimeout(() => {
+			layers.forEach((layer, layerIndex) => {
+				if (layer.dataset.layer !== activeLayerKey) unloadHigh(layer)
+				if (Math.abs(layerIndex - index) > 1) unloadPreview(layer)
+			})
+		}, STAGE_CLEANUP_DELAY)
+	}
+
+	/** Warm up the current chapter and its neighbours, then plan the upgrade. */
+	function updateStageMedia(index) {
+		;[sections[index - 1], sections[index], sections[index + 1]].forEach((section) => {
+			if (section) loadPreview(layerByKey.get(section.dataset.layer))
+		})
+		scheduleHighResolution()
+		scheduleStageCleanup(index)
 	}
 
 	/* ---------------------------------------------------------------------- */
@@ -213,11 +343,7 @@
 			activeLayerKey = layerKey
 			layers.forEach((layer) => layer.classList.toggle("is-active", layer.dataset.layer === layerKey))
 
-			// Load this chapter and its immediate neighbours.
-			const layer = layerByKey.get(layerKey)
-			loadLayer(layer)
-			loadLayer(layerByKey.get(sections[index - 1]?.dataset.layer))
-			loadLayer(layerByKey.get(sections[index + 1]?.dataset.layer))
+			updateStageMedia(index)
 		}
 
 		// Header copy.
@@ -273,7 +399,14 @@
 		requestAnimationFrame(updateScrollUI)
 	}
 
-	window.addEventListener("scroll", requestScrollUpdate, { passive: true })
+	window.addEventListener(
+		"scroll",
+		() => {
+			lastScrollAt = performance.now()
+			requestScrollUpdate()
+		},
+		{ passive: true },
+	)
 	window.addEventListener("resize", requestScrollUpdate)
 
 	/* ---------------------------------------------------------------------- */
@@ -635,7 +768,6 @@
 	const coverSection = sections[0]
 	if (coverSection) {
 		setActiveSection(coverSection, 0)
-		loadLayer(layerByKey.get(coverSection.dataset.layer))
 	}
 
 	updateScrollUI()
