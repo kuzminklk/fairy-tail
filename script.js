@@ -1,13 +1,14 @@
 /**
- * ЯСНА — лесная сказка в стихах
+ * Yasna — a forest fairy tale in verse
  * ---------------------------------------------------------------------------
  * A scroll-driven photo story in three cooperating parts:
  *
  *   1. STAGE — one fixed, full-viewport photograph behind the whole page.
  *      Each story section points at a stage layer through [data-layer].
- *      Layers cross-fade as the story advances; photographs are loaded lazily
- *      when their section is about to appear (the tiny blurred placeholders
- *      are already painted by CSS, so nothing ever flashes empty).
+ *      Layers cross-fade as the story advances. Every layer paints an inline
+ *      pre-blurred placeholder immediately. The cover and prologue are warmed
+ *      at boot; other previews and high-resolution files wait until scrolling
+ *      settles.
  *
  *   2. STORY UI — current chapter in the header, reading progress, chapter
  *      rail and the full-screen chapter index.

@@ -25,9 +25,10 @@ made landscape and Retina displays look soft.
 - Stage photographs are loaded in three tiers. Every layer carries an inline
   128px pre-blurred placeholder, so even a fresh fast scan paints a photograph
   immediately without network or runtime blur.
-- 900px previews are requested only after scrolling has been quiet for about
-  120 ms and are kept once loaded. A fast scan can cross all eleven chapters
-  without requesting a photograph file.
+- The initial cover and prologue previews are warmed at boot. After that, 900px
+  previews are requested only when scrolling has been quiet for about 120 ms
+  and are kept once loaded. A fast scan can cross the remaining chapters
+  without requesting another photograph file.
 - The high-resolution rendition is requested about 500 ms after the scroll
   settles, only for the active chapter. When the reader moves on, the previous
   high-resolution layer is released after the cross-fade; previews stay
@@ -46,8 +47,8 @@ made landscape and Retina displays look soft.
 - The cover preload requests the 900px preview on phones and the 2400px rendition
   on wider screens; it never preloads the full cover file.
 - The lightbox uses the same high-resolution `srcset` with a display-size hint.
-- Preview and high-resolution files are requested only from the idle timers;
-  high resolution uses low priority.
+- After the opening cover and prologue, preview and high-resolution files are
+  requested only from the idle timers; high resolution uses low priority.
 
 ## Design notes
 

@@ -20,7 +20,7 @@ Generate renditions offline with Python and Pillow:
 
 Keep `photos/` untouched. In the browser, create a `<picture>` with actual
 pixel-width descriptors and choose the rendition through `sizes`. Compute
-`sizes` for the cover-cropped stage as `max(100vw, 100vh × image ratio)` and
+`sizes` for the cover-cropped stage as `max(100vw, 100lvh × image ratio)` and
 refresh it after resize or rotation. The lightbox uses the same
 high-resolution candidates.
 
@@ -34,11 +34,13 @@ high-resolution candidates.
 
 ## Consequences
 
-- Assets total about 56 MiB, but each chapter requests one file, and the
-  browser picks 2400px or 3600px at 1× and full resolution at 2×, depending on
-  the viewport.
+- Assets total about 56 MiB. After the initial cover and prologue, a chapter
+  requests a preview only after the scroll settles and a high-resolution file
+  after a further pause; the browser picks 2400px or 3600px at 1× and full
+  resolution at 2×, depending on the viewport.
 - Changing the source photographs requires rerunning
-  `scripts/optimize-images.py` and updating the manifest.
+  `scripts/optimize-images.py`, updating the manifest, and refreshing the
+  inline placeholders in `index.html`.
 - `srcset` widths, `sizes` calculations, and the manifest are coupled and must
   be updated together.
 

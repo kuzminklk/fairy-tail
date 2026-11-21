@@ -18,7 +18,7 @@ jump to a chapter without losing orientation.
   `01 / 10` through `10 / 10`. The cover shows `—` in the counter.
 - A vertical rail on the right lists the ten story chapters. The active dot is
   larger and gold; hover or focus reveals the chapter title.
-- The “Главы” button opens a full-screen native dialog with all ten chapters.
+- The Chapters button (“Главы”) opens a full-screen native dialog with all ten chapters.
   Activating a chapter closes the dialog and scrolls to that section.
 - A thin progress bar at the top follows the page scroll.
 - The rail and chapter label hide in the coda; the header remains available.
@@ -45,7 +45,7 @@ jump to a chapter without losing orientation.
 - Header title and counter update while scrolling in both directions.
 - Rail dots and the chapter dialog jump to the correct section.
 - The dialog closes on Escape, the close button, or a chapter choice, and
-  focus returns to the “Главы” button.
+  focus returns to the Chapters (“Главы”) button.
 - The active rail dot exposes `aria-current="step"`; no other dot does.
 - Keyboard and screen-reader users can open, navigate, and close the dialog.
 - Without JavaScript the story remains scrollable; dynamic navigation is

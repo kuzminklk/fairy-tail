@@ -20,9 +20,10 @@ Load each stage layer in three tiers:
 1. **Inline placeholder** — a 128px-wide, pre-blurred JPEG embedded as a data
    URI in the layer's CSS. It needs no network request or runtime blur filter;
    its tiny decode is immediate, so it is available even on a fresh fast scan.
-2. **Preview** — a 900px WebP/JPEG file. Previews are requested only after
-   scrolling has been quiet for about 120 ms and are kept once loaded. A fast
-   scan can cross all eleven chapters without requesting or decoding one.
+2. **Preview** — a 900px WebP/JPEG file. The initial cover and prologue are
+   warmed at boot; all other previews are requested only after scrolling has
+   been quiet for about 120 ms and are kept once loaded. A fast scan can cross
+   the remaining chapters without requesting or decoding another file.
 3. **High resolution** — the existing responsive `srcset` up to the original
    file, requested about 500 ms after the scroll settles and only for the active
    chapter.
@@ -60,8 +61,9 @@ and then the high-resolution rendition fade in.
   photograph files.
 - After the reader stops, the active chapter fades from the blurred placeholder
   through a 900px preview to the high-resolution rendition.
-- One high-resolution image is decoded at a time; only previews for visited
-  chapters stay resident.
+- High-resolution layers are limited to the active chapter; the outgoing layer
+  is released after its cross-fade. Previews for visited chapters stay
+  resident.
 - More state lives in `script.js`, and the placeholder/preview/high timers must
   be kept in sync with scrolling.
 - Fast-scroll mode permanently reveals the sections it passes; this trades the

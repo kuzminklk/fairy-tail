@@ -28,7 +28,9 @@ pointers, and touch.
 
 ## Design notes
 
-- Photo metadata lives in the `photos` array in `script.js`.
+- Photo metadata lives in the `photos` array in `script.js`. `FRAME_ORDER`
+  intentionally permutes the filmstrip order; each photo keeps its original
+  `num`, so the strip is not chronological.
 - `buildFrames()` is called from an `IntersectionObserver` with a 900px margin
   before the coda.
 - `openLightbox()`, `renderLightbox()`, and `stepLightbox()` manage the dialog;

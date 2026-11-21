@@ -31,7 +31,7 @@ Developed using DeepSeek Harness with 4.1 Flash model
 1. Developed the fairy tale in Russian verse from the photographs
 2. Implemented the full-screen photo stage and chapter navigation
 3. Improved the responsive layout, accessibility and no-JavaScript fallback
-4. Added high-resolution renditions, inline blurred placeholders for fast scrolling, and a deliberately mixed filmstrip
+4. Added high-resolution renditions, inline pre-blurred placeholders for fast scrolling, and a deliberately mixed filmstrip
 5. Documented the project, its features and architectural decisions
 
 ### To-dos
@@ -53,3 +53,4 @@ Clone the codebase via `git clone https://github.com/kuzminklk/fairy-tail`
 
 1. Verify generated renditions by `python3 scripts/optimize-images.py --verify-only`
 2. Regenerate all renditions by `python3 scripts/optimize-images.py --force`
+3. Refresh the inline placeholders in `index.html` from `assets/photos/lqip/` when the placeholders change

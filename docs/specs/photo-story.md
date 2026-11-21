@@ -19,20 +19,20 @@ ending, on one page.
 
 - The cover introduces “Yasna”, the subtitle, a short description, a start
   link, and project metadata.
-- Ten story sections follow: зачин, eight numbered chapters, and the epilogue.
-  Each has a chapter label, a title, a poem, and one photograph.
+- Ten story sections follow: prologue, eight numbered chapters, and the
+  epilogue. Each has a chapter label, a title, a poem, and one photograph.
 - The photograph mapping is fixed:
   - cover — `13-pines`
-  - зачин — `03-canopy`
-  - I Берёза — `01-birch`
-  - II Тропа — `09-fern-path`
-  - III Хоровод — `04-away`
-  - IV Оглянулась — `06-turning`
-  - V Пень — `12-fallen-log`
-  - VI Сосны — `14-pine-path`
-  - VII Сон — `15-dream`
-  - VIII Пробуждение — `10-walking`
-  - эпилог — `16-dream-face`
+  - prologue — `03-canopy`
+  - I Birch — `01-birch`
+  - II Path — `09-fern-path`
+  - III Round dance — `04-away`
+  - IV Looked back — `06-turning`
+  - V Stump — `12-fallen-log`
+  - VI Pines — `14-pine-path`
+  - VII Dream — `15-dream`
+  - VIII Awakening — `10-walking`
+  - epilogue — `16-dream-face`
 - Scrolling past the 42% focus line advances the fixed background and updates
   the header, counter, rail, and progress bar.
 - Stanzas fade in when a chapter enters the viewport. With reduced motion the
@@ -56,7 +56,7 @@ ending, on one page.
 ## Acceptance criteria
 
 - Cover, ten story sections, coda, and footer render on a static server.
-- All eleven stage layers load their photographs with no missing files.
+- Every stage layer can load its photograph, and every referenced file exists.
 - The poem is readable without JavaScript.
 - Chapter order, photograph mapping, captions, and screen-reader descriptions
   match the current poem.

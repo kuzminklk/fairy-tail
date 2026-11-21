@@ -26,9 +26,9 @@ Keep the site static: no framework, bundler, package manager, or build step.
 Keep story content, interface copy, and alternative text in Russian; keep code, comments, README, AGENTS and documentation in English.  
 Do not edit files in `photos/`; generate web renditions through `scripts/optimize-images.py`.  
 Keep the poem in `index.html` and `poem.txt` in sync.  
-Keep actual `srcset` widths, `sizes` calculations, and `assets/photos/manifest.json` in sync when changing the image pipeline.  
+Keep actual `srcset` widths, `sizes` calculations, `assets/photos/manifest.json`, and the inline `--lqip` data URIs in sync when changing the image pipeline.  
 Keep the stage box viewport-sized and give its photograph layers a stable `100lvh` height; derive image `sizes` from the large viewport, not `window.innerHeight`, so mobile browser chrome cannot resize or re-select the picture.  
-Give every stage layer an inline pre-blurred placeholder (generated from `assets/photos/lqip/`): it must paint before any network image so fast scans never show black. Load 900px previews only after scrolling settles, keep them once loaded, and load the high-resolution tier for the active chapter after a further pause; release only high-resolution layers.  
+Give every stage layer an inline pre-blurred placeholder (generated from `assets/photos/lqip/`): it must paint before any network image so fast scans never show black. Warm the cover and prologue previews at boot, then load other 900px previews only after scrolling settles, keep them once loaded, and load the high-resolution tier for the active chapter after a further pause; release only high-resolution layers.  
 Keep fast scrolling readable: the fast-scroll mode reveals copy immediately; keep the original slow stage cross-fade and image fades rather than shortening them.  
 Keep the stage static; avoid full-screen transform animations that can break mobile clipping and repaint performance.  
 Preserve accessibility: skip link, focus states, native dialogs, reduced-motion support, and no-JavaScript readability.  
