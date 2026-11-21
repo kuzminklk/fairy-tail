@@ -27,6 +27,8 @@ Keep story content, interface copy, and alternative text in Russian; keep code, 
 Do not edit files in `photos/`; generate web renditions through `scripts/optimize-images.py`.  
 Keep the poem in `index.html` and `poem.txt` in sync.  
 Keep actual `srcset` widths, `sizes` calculations, and `assets/photos/manifest.json` in sync when changing the image pipeline.  
+Keep the fixed stage sized with `100lvh` and derive image `sizes` from its box, not `window.innerHeight`; mobile browser chrome must not resize or re-select the photograph.  
+Keep the Ken Burns drift on the stage, not on individual layers, so cross-fading photographs share one scale.  
 Preserve accessibility: skip link, focus states, native dialogs, reduced-motion support, and no-JavaScript readability.  
 Document behavior changes in `docs/specs` and architectural choices in `docs/decisions`.
 

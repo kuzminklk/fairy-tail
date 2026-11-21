@@ -54,6 +54,7 @@
 	/* Stage: lazy full-screen photographs                                    */
 	/* ---------------------------------------------------------------------- */
 
+	const stage = document.querySelector(".stage")
 	const layers = Array.from(document.querySelectorAll(".stage__layer"))
 	const layerByKey = new Map(layers.map((layer) => [layer.dataset.layer, layer]))
 
@@ -101,15 +102,21 @@
 
 	/**
 	 * The stage photo is object-fit: cover. On a portrait phone it is scaled by
-	 * height, so its rendered width is viewportHeight × imageRatio — usually
-	 * larger than 100vw. Passing that exact width to `sizes` stops the browser
-	 * from under-selecting a small file and keeps the landscape view sharp.
+	 * the stage height, so its rendered width is stageHeight × imageRatio —
+	 * usually larger than 100vw. Passing that exact width to `sizes` stops the
+	 * browser from under-selecting a small file and keeps the landscape view
+	 * sharp.
+	 *
+	 * Read the stage box rather than window.innerHeight: `.stage` uses 100lvh,
+	 * which stays constant while mobile browser chrome hides and reappears.
 	 */
 	function stageSizes(slug) {
 		const viewportWidth = window.innerWidth
-		const viewportHeight = window.innerHeight
+		// clientHeight is the untransformed layout height; getBoundingClientRect
+		// would include the stage drift scale and make `sizes` drift with it.
+		const stageHeight = stage?.clientHeight || window.innerHeight
 		const imageRatio = isLandscape(slug) ? 3 / 2 : 2 / 3
-		const renderedWidth = Math.max(viewportWidth, viewportHeight * imageRatio)
+		const renderedWidth = Math.max(viewportWidth, stageHeight * imageRatio)
 		return `${Math.ceil(renderedWidth)}px`
 	}
 

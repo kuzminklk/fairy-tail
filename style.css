@@ -220,10 +220,18 @@ figure {
 
 .stage {
 	position: fixed;
-	inset: 0;
+	top: 0;
+	left: 0;
+	/* 100lvh is the large viewport: it does not change when mobile browser
+	   chrome hides or reappears during scrolling. Using inset/100dvh here made
+	   the fixed photograph resize on the first upward scroll. */
+	width: 100%;
+	height: 100vh;
+	height: 100lvh;
 	z-index: 0;
 	overflow: hidden;
 	background: #050806;
+	animation: stage-drift 28s var(--ease-soft) both;
 	transition: opacity 0.9s var(--ease);
 	pointer-events: none;
 }
@@ -302,45 +310,16 @@ html:not(.js) .stage__layer:first-child {
 	visibility: visible;
 }
 
-/* Very slow Ken Burns drift.
-   The animation is attached to every loaded layer but only runs while the
-   layer is active. Pausing instead of removing it keeps the outgoing
-   photograph at its current scale during the cross-fade; removing the
-   animation snapped the image back to 100% and read as a layout jump. */
-.stage__layer.is-loaded img {
-	animation-duration: 28s;
-	animation-timing-function: var(--ease-soft);
-	animation-fill-mode: both;
-	animation-play-state: paused;
-}
-
-.stage__layer:nth-child(odd).is-loaded img {
-	animation-name: stage-drift;
-}
-
-.stage__layer:nth-child(even).is-loaded img {
-	animation-name: stage-drift-alt;
-}
-
-.stage__layer.is-active.is-loaded img {
-	animation-play-state: running;
-}
-
+/* Very slow Ken Burns drift, applied once to the whole stage rather than to
+   individual layers. Every photograph therefore shares the same scale during
+   a cross-fade: swapping the layer never changes the zoom or produces a
+   size jump when scrolling down and back up. */
 @keyframes stage-drift {
 	from {
 		transform: scale(1.035) translate3d(0, 0, 0);
 	}
 	to {
 		transform: scale(1.12) translate3d(-1.2%, -1.4%, 0);
-	}
-}
-
-@keyframes stage-drift-alt {
-	from {
-		transform: scale(1.1) translate3d(1%, 1.2%, 0);
-	}
-	to {
-		transform: scale(1.035) translate3d(0, 0, 0);
 	}
 }
 
@@ -1891,7 +1870,7 @@ dialog[open]::backdrop {
 		transition-duration: 0.01ms !important;
 	}
 
-	.stage__layer.is-loaded img {
+	.stage {
 		animation: none !important;
 		transform: none !important;
 	}

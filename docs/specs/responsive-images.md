@@ -22,10 +22,12 @@ made landscape and Retina displays look soft.
   browsers without WebP.
 - The browser chooses the file from actual pixel-width descriptors. WebP is
   used when supported.
-- The stage is `object-fit: cover`; its `sizes` is
-  `max(100vw, 100vh × image ratio)`, where portrait photographs use 2:3 and the
-  single landscape photograph uses 3:2. This accounts for the cover crop, which
-  is wider than the viewport on portrait phones.
+- The stage is `object-fit: cover`. Its height is the large viewport
+  (`100lvh`), so mobile browser chrome hiding or reappearing does not resize
+  the photograph. Its `sizes` is `max(100vw, stageHeight × image ratio)`,
+  where portrait photographs use 2:3 and the single landscape photograph uses
+  3:2. This accounts for the cover crop, which is wider than the viewport on
+  portrait phones.
 - `sizes` is recomputed after window resize or device rotation, so a rotated
   phone upgrades to a suitable file.
 - Only the active chapter and its neighbours are requested. Other layers show
@@ -41,7 +43,8 @@ made landscape and Retina displays look soft.
   average colors.
 - `renditionWidths()` in `script.js` maps portrait and landscape slugs to
   actual widths; `webpSrcset()` and `jpgSrcset()` build candidates;
-  `stageSizes()` and `lightboxSizes()` calculate the hint.
+  `stageSizes()` reads the stage box and `lightboxSizes()` calculates the
+  lightbox hint.
 - Full-size WebP is not an upscale; it uses the original pixel dimensions.
 - The image pipeline is explained in
   [0004. Responsive image pipeline](../decisions/0004-responsive-image-pipeline.md).
@@ -58,4 +61,6 @@ made landscape and Retina displays look soft.
   at DPR 2.
 - `python3 scripts/optimize-images.py --verify-only` reports 153 valid image
   files: 68 legacy renditions, 68 high-resolution renditions, and 17 LQIP.
+- Scrolling down and back up on a mobile device does not resize the stage
+  photograph or re-select a smaller rendition.
 - No browser console errors, failed requests, or missing files.

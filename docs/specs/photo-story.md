@@ -60,3 +60,5 @@ ending, on one page.
   match the current poem.
 - The page works at 320px, 390px, 768px, 1440px, and 2560px widths, including
   short landscape viewports.
+- Scrolling down and back up on a mobile viewport leaves the stage photograph
+  at a stable scale.
