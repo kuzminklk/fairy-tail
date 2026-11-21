@@ -232,11 +232,9 @@ figure {
 	pointer-events: none;
 }
 
-/* The coda (filmstrip + footer) is a dark room; the photographs step aside. */
-body.is-coda .stage {
-	opacity: 0;
-}
-
+/* The coda (filmstrip + footer) keeps the last photograph behind its dark
+   veil instead of blanking the stage, so scanning into and out of the coda
+   never flashes black. */
 body.is-coda .chapter-rail,
 body.is-coda .header-chapter {
 	opacity: 0;
@@ -299,7 +297,6 @@ body.is-coda .chapter-rail {
 	object-position: var(--pos, 50% 45%);
 	opacity: 0;
 	transition: opacity 1.2s var(--ease-soft);
-	will-change: opacity;
 }
 
 /* Preview and high-resolution renditions are stacked; each fades in when its
@@ -825,14 +822,14 @@ html.js .scene__caption {
 	opacity: 0;
 	transform: translateY(26px);
 	transition:
-		opacity 1s var(--ease),
-		transform 1s var(--ease);
+		opacity 0.55s var(--ease),
+		transform 0.55s var(--ease);
 }
 
 html.js .is-revealed .scene__head {
 	opacity: 1;
 	transform: none;
-	transition-delay: 0.05s;
+	transition-delay: 0.04s;
 }
 
 html.js .is-revealed .poem > .stanza {
@@ -841,25 +838,43 @@ html.js .is-revealed .poem > .stanza {
 }
 
 html.js .is-revealed .poem > .stanza:nth-child(1) {
-	transition-delay: 0.18s;
+	transition-delay: 0.08s;
 }
 html.js .is-revealed .poem > .stanza:nth-child(2) {
-	transition-delay: 0.32s;
+	transition-delay: 0.14s;
 }
 html.js .is-revealed .poem > .stanza:nth-child(3) {
-	transition-delay: 0.46s;
+	transition-delay: 0.2s;
 }
 html.js .is-revealed .poem > .stanza:nth-child(4) {
-	transition-delay: 0.6s;
+	transition-delay: 0.26s;
 }
 html.js .is-revealed .poem > .stanza:nth-child(5) {
-	transition-delay: 0.74s;
+	transition-delay: 0.32s;
 }
 
 html.js .is-revealed .scene__caption {
 	opacity: 1;
 	transform: none;
-	transition-delay: 0.8s;
+	transition-delay: 0.36s;
+}
+
+/* While the reader is skimming, do not make the typography wait for a
+   staggered reveal or keep several full-screen photographs cross-fading.
+   The class is added by script.js and removed shortly after scrolling stops. */
+body.is-fast-scrolling .stage__layer,
+body.is-fast-scrolling .stage__layer.is-active,
+body.is-fast-scrolling .stage__layer img {
+	transition-duration: 0.12s !important;
+	transition-delay: 0s !important;
+}
+
+body.is-fast-scrolling .scene__head,
+body.is-fast-scrolling .poem > .stanza,
+body.is-fast-scrolling .scene__caption {
+	opacity: 1 !important;
+	transform: none !important;
+	transition: none !important;
 }
 
 /* 09. Finale */
@@ -946,7 +961,7 @@ html.js .is-revealed .scene__caption {
 	position: relative;
 	z-index: 2;
 	padding: clamp(90px, 14vh, 160px) 0 clamp(70px, 10vh, 120px);
-	background: linear-gradient(180deg, rgba(6, 10, 7, 0.88) 0%, var(--bg) 26%);
+	background: linear-gradient(180deg, rgba(6, 10, 7, 0.72) 0%, rgba(6, 10, 7, 0.96) 22%, var(--bg) 48%);
 	border-top: 1px solid var(--line);
 }
 

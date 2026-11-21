@@ -22,13 +22,14 @@ made landscape and Retina displays look soft.
   browsers without WebP.
 - The browser chooses the file from actual pixel-width descriptors. WebP is
   used when supported.
-- Stage photographs are loaded in two tiers. A small preview (900px on
-  phones, 2400px on wider screens) is requested immediately for the active
-  chapter and its neighbours. The high-resolution rendition is requested only
-  after scrolling has been quiet for about a quarter of a second.
+- Stage photographs are loaded in two tiers. A single 900px preview is
+  prewarmed for every chapter shortly after the first paint and kept resident;
+  this makes a fast scan in either direction land on a photograph instead of a
+  black stage. The high-resolution rendition is requested only for the active
+  chapter after scrolling has been quiet for about a quarter of a second.
 - Only the active chapter keeps a high-resolution image. When the reader moves
   to another chapter, the previous high-resolution layer is released after the
-  cross-fade; previews more than one chapter away are released as well.
+  cross-fade; previews stay available.
 - The stage box follows the visible viewport; its photographs are
   `object-fit: cover` and use a stable `100lvh` height, so mobile browser
   chrome hiding or reappearing does not resize the picture. Their `sizes` is
@@ -39,8 +40,11 @@ made landscape and Retina displays look soft.
   phone upgrades to a suitable file.
 - Fast scrolling therefore requests preview files only; the sharp image is
   decoded once the reader settles on a chapter.
+- The cover preload requests the 900px preview on phones and the 2400px rendition
+  on wider screens; it never preloads the full cover file.
 - The lightbox uses the same high-resolution `srcset` with a display-size hint.
-- The cover WebP is preloaded with matching width descriptors.
+- All previews are loaded with `fetchPriority` auto; only the active high
+  resolution tier uses low priority and waits for idle scrolling.
 
 ## Design notes
 
@@ -53,8 +57,9 @@ made landscape and Retina displays look soft.
   candidates; `stageSizes()` reads a hidden `100lvh` probe and
   `lightboxSizes()` calculates the lightbox hint.
 - `loadPreview()`, `loadHigh()` and `scheduleStageCleanup()` in `script.js`
-  implement the graduated tiers; `lastScrollAt` gates the high-resolution
-  request until scrolling stops.
+  implement the graduated tiers; `prewarmPreviews()` loads all eleven
+  previews, `lastScrollAt` gates the high-resolution request, and
+  `scheduleStageCleanup()` releases only high-resolution layers.
 - Full-size WebP is not an upscale; it uses the original pixel dimensions.
 - The image pipeline is explained in
   [0004. Responsive image pipeline](../decisions/0004-responsive-image-pipeline.md).
@@ -75,6 +80,8 @@ made landscape and Retina displays look soft.
   photograph or re-select a smaller rendition.
 - A fast scroll requests preview files only; after it stops, exactly one
   high-resolution image is requested for the visible chapter.
-- At most the active high-resolution layer and three preview layers remain in
-  the DOM after cleanup.
+- Fast scrolling never leaves an active chapter without a visible preview, and
+  its copy is revealed immediately.
+- At most the active high-resolution layer and all eleven preview layers remain
+  in the DOM after cleanup; previews are never released.
 - No browser console errors, failed requests, or missing files.

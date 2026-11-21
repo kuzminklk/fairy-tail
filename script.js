@@ -159,12 +159,6 @@
 		return media
 	}
 
-	function previewFileBase() {
-		// Desktop previews are larger because the full-screen crop is wide; phones
-		// use the smallest rendition to keep fast scrolling cheap.
-		return window.innerWidth > 860 ? "2400" : "900"
-	}
-
 	/**
 	 * Build a stacked <picture> for one layer. The preview is a single small
 	 * file; the high-resolution tier uses the full responsive candidates and is
@@ -185,9 +179,8 @@
 		img.loading = "eager"
 
 		if (tier === "preview") {
-			const base = previewFileBase()
-			source.srcset = `assets/photos/${slug}-${base}.webp`
-			img.src = `assets/photos/${slug}-${base}.jpg`
+			source.srcset = `assets/photos/${slug}-900.webp`
+			img.src = `assets/photos/${slug}-900.jpg`
 			img.fetchPriority = "auto"
 		} else {
 			source.srcset = webpSrcset(slug)
@@ -215,13 +208,6 @@
 		// A preview always sits below a high-resolution image.
 		layer.prepend(picture)
 		if (img.complete && img.naturalWidth) reveal()
-	}
-
-	function unloadPreview(layer) {
-		const media = layerMedia.get(layer)
-		if (!media?.preview) return
-		media.preview.remove()
-		media.preview = null
 	}
 
 	function loadHigh(layer) {
@@ -269,12 +255,11 @@
 		}, HIGH_RES_DELAY)
 	}
 
-	function scheduleStageCleanup(index) {
+	function scheduleStageCleanup() {
 		window.clearTimeout(stageCleanupTimer)
 		stageCleanupTimer = window.setTimeout(() => {
-			layers.forEach((layer, layerIndex) => {
+			layers.forEach((layer) => {
 				if (layer.dataset.layer !== activeLayerKey) unloadHigh(layer)
-				if (Math.abs(layerIndex - index) > 1) unloadPreview(layer)
 			})
 		}, STAGE_CLEANUP_DELAY)
 	}
@@ -285,7 +270,21 @@
 			if (section) loadPreview(layerByKey.get(section.dataset.layer))
 		})
 		scheduleHighResolution()
-		scheduleStageCleanup(index)
+		scheduleStageCleanup()
+	}
+
+	/**
+	 * Preload every chapter's small preview. The previews are intentionally
+	 * kept in memory: they are cheap (about 2 MB decoded each on a phone) and
+	 * guarantee that scanning in either direction always has a photograph
+	 * behind the text instead of a black stage.
+	 */
+	let previewsPrewarmed = false
+
+	function prewarmPreviews() {
+		if (previewsPrewarmed) return
+		previewsPrewarmed = true
+		layers.forEach((layer) => loadPreview(layer))
 	}
 
 	/* ---------------------------------------------------------------------- */
@@ -403,6 +402,8 @@
 		"scroll",
 		() => {
 			lastScrollAt = performance.now()
+			prewarmPreviews()
+			noteFastScroll()
 			requestScrollUpdate()
 		},
 		{ passive: true },
@@ -414,6 +415,50 @@
 	/* ---------------------------------------------------------------------- */
 
 	const revealTargets = Array.from(document.querySelectorAll(".scene, .finale"))
+
+	let lastScrollSampleY = window.scrollY
+	let fastScrollTimer = 0
+	let scrollWindowStartedAt = performance.now()
+	let scrollWindowDistance = 0
+
+	function triggerFastScroll() {
+		if (!body.classList.contains("is-fast-scrolling")) {
+			body.classList.add("is-fast-scrolling")
+			revealTargets.forEach((target) => target.classList.add("is-revealed"))
+		}
+
+		window.clearTimeout(fastScrollTimer)
+		fastScrollTimer = window.setTimeout(() => body.classList.remove("is-fast-scrolling"), 260)
+	}
+
+	/**
+	 * Fast wheel/touch scrolling can outrun the IntersectionObserver reveal and
+	 * leave text invisible for a second. Browser wheel scrolling is smoothed
+	 * into small increments, so measure the distance covered over a short
+	 * window rather than per event: sustained motion above ~1200 px/s (or one
+	 * huge jump) switches to the simplified fast-scroll presentation.
+	 */
+	function noteFastScroll() {
+		const now = performance.now()
+		const y = window.scrollY
+		const distance = Math.abs(y - lastScrollSampleY)
+		lastScrollSampleY = y
+		scrollWindowDistance += distance
+
+		if (distance > window.innerHeight * 0.65) {
+			triggerFastScroll()
+			scrollWindowDistance = 0
+			scrollWindowStartedAt = now
+			return
+		}
+
+		const elapsed = now - scrollWindowStartedAt
+		if (elapsed < 120) return
+
+		if (scrollWindowDistance / elapsed > 1.2) triggerFastScroll()
+		scrollWindowDistance = 0
+		scrollWindowStartedAt = now
+	}
 
 	if ("IntersectionObserver" in window) {
 		const revealObserver = new IntersectionObserver(
@@ -771,6 +816,10 @@
 	}
 
 	updateScrollUI()
+
+	// Previews are small; start warming every chapter almost immediately so a
+	// fast scan never lands on a blank stage.
+	window.setTimeout(prewarmPreviews, 80)
 
 	// A tiny safety net: if the browser restores an old scroll position, make
 	// sure the matching chapter is active after layout settles.

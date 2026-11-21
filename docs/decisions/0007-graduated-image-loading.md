@@ -17,18 +17,25 @@ the resolution was not an acceptable fix.
 
 Load each stage layer in two tiers:
 
-1. **Preview** — a single 900px file on phones and a 2400px file on wider
-   screens, requested immediately for the active chapter and its neighbours.
+1. **Preview** — a single 900px file for every chapter, prewarmed shortly
+   after the first paint and kept resident. The eleven previews cost roughly
+   1.6 MB of network and 24 MB of decoded memory, but make every chapter
+   immediately available in both scroll directions.
 2. **High resolution** — the existing responsive `srcset` up to the original
    file, requested only after scrolling has been quiet for about 240 ms and
    only for the active chapter.
 
-High-resolution layers are released when the reader moves to another chapter;
-previews more than one chapter away are released as well. The LQIP remains
-under every tier, so no state is ever blank. The stage stays static: the
-earlier full-screen drift animation was removed because it added a composited
-transform to a large fixed layer, which cost mobile GPU time and could expose
-clipping seams.
+High-resolution layers are released when the reader moves on; previews are not.
+The LQIP remains under every tier, so no state is ever blank. The stage stays
+static: the earlier full-screen drift animation was removed because it added a
+composited transform to a large fixed layer, which cost mobile GPU time and
+could expose clipping seams. The coda keeps the last photograph behind its dark
+veil instead of hiding the stage entirely.
+
+Fast wheel or touch scrolling is detected separately. During a skim, all copy
+is revealed immediately (the IntersectionObserver can fall behind) and the
+stage cross-fade is shortened; the normal staggered reveal resumes when
+scrolling stops.
 
 ## Alternatives
 
@@ -49,10 +56,13 @@ clipping seams.
   the reader settles on a chapter.
 - A chapter may briefly show a softer preview before its high-resolution
   rendition fades in.
-- One high-resolution image is decoded at a time; previews are limited to the
-  active chapter and its immediate neighbours.
+- One high-resolution image is decoded at a time; all eleven previews stay
+  resident (about 24 MB decoded on a phone).
 - More state lives in `script.js`, and the high-resolution timer must be kept
   in sync with scrolling.
+- Fast-scroll mode permanently reveals the sections it passes; this trades the
+  staggered entrance for readable copy. Normal slow scrolling keeps the
+  reveal.
 - The visual language no longer includes a Ken Burns drift; cross-fades carry
   the motion instead.
 

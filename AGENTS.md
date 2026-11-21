@@ -28,7 +28,8 @@ Do not edit files in `photos/`; generate web renditions through `scripts/optimiz
 Keep the poem in `index.html` and `poem.txt` in sync.  
 Keep actual `srcset` widths, `sizes` calculations, and `assets/photos/manifest.json` in sync when changing the image pipeline.  
 Keep the stage box viewport-sized and give its photograph layers a stable `100lvh` height; derive image `sizes` from the large viewport, not `window.innerHeight`, so mobile browser chrome cannot resize or re-select the picture.  
-Load stage photographs in two tiers: a small preview immediately and the high-resolution rendition only after scrolling settles; release far-away renditions to keep mobile memory bounded.  
+Load stage photographs in two tiers: small 900px previews are prewarmed for every chapter and kept resident so fast scans never show an empty stage; only the active chapter upgrades to a high-resolution rendition after scrolling settles, and that tier is released when the reader moves on.  
+Keep fast scrolling readable: the fast-scroll mode reveals copy immediately and shortens stage fades; normal reveals stay gentle but brief.  
 Keep the stage static; avoid full-screen transform animations that can break mobile clipping and repaint performance.  
 Preserve accessibility: skip link, focus states, native dialogs, reduced-motion support, and no-JavaScript readability.  
 Document behavior changes in `docs/specs` and architectural choices in `docs/decisions`.

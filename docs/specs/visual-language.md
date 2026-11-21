@@ -30,6 +30,12 @@ poetry over changing images, on screens from small phones to wide monitors.
   cross-fade between chapters. The stage itself is static: no full-screen
   transform animation runs while scrolling, which keeps mobile repainting
   predictable.
+- Fast scrolling: when the reader skims, copy is revealed immediately and the
+  stage cross-fade is shortened. The gentle staggered reveal is reserved for
+  normal reading speed.
+- Coda: the final photograph stays behind the filmstrip's dark veil; the coda
+  is dark but not a black wall, and scrolling into or out of it has no blank
+  stage.
 - Reduced motion: animation and smooth scrolling are suppressed; reveal
   content is shown immediately.
 - Accessibility: skip link, semantic headings, visible focus outlines, native
@@ -53,6 +59,8 @@ poetry over changing images, on screens from small phones to wide monitors.
 ## Acceptance criteria
 
 - Every chapter's verse is readable over its photograph at 320px and 1440px.
+- Fast scrolling shows copy immediately instead of leaving it mid-reveal.
+- The coda, footer transition, and fast scans never expose an empty black stage.
 - Short landscape viewports do not place chapter titles under the fixed header.
 - Reduced motion removes reveals and smooth scrolling.
 - Focus is visible on all links, buttons, dots, and dialog controls.

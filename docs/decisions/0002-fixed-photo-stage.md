@@ -16,8 +16,8 @@ sized to the large viewport (`100lvh`): mobile browser chrome can hide or
 reappear without rescaling the picture, and the extra area is clipped by the
 stage. `script.js` selects the active section at a 42% focus line, loads the
 matching photograph into that layer, and cross-fades opacity between layers.
-Only the active layer and its immediate neighbours get a preview; the
-high-resolution tier follows when scrolling settles. Each layer paints a 24px
+Every layer gets a small preview that is prewarmed and kept resident; only the
+active layer upgrades to the high-resolution tier after scrolling settles. Each layer paints a 24px
 LQIP from inline CSS before the sharp image loads.
 
 ## Alternatives
@@ -31,7 +31,9 @@ LQIP from inline CSS before the sharp image loads.
 
 ## Consequences
 
-- One photograph is visible at a time; the coda hides the stage entirely.
+- One photograph is visible at a time. The coda keeps the last photograph
+  behind its dark veil instead of blanking the stage, so scanning into and out
+  of the coda never flashes black.
 - Images are requested progressively; slow connections see the LQIP.
 - The active section depends on JavaScript; without it the LQIP cover remains.
 - The stage is static. An earlier full-screen drift animation was removed

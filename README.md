@@ -31,7 +31,7 @@ Developed using DeepSeek Harness with 4.1 Flash model
 1. Developed the fairy tale in Russian verse from the photographs
 2. Implemented the full-screen photo stage and chapter navigation
 3. Improved the responsive layout, accessibility and no-JavaScript fallback
-4. Added high-resolution renditions and graduated stage image loading
+4. Added high-resolution renditions, graduated stage image loading, and a fast-scroll presentation
 5. Documented the project, its features and architectural decisions
 
 ### To-dos
