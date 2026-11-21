@@ -30,6 +30,8 @@ paints a 24px LQIP from inline CSS before the sharp image loads.
 - One photograph is visible at a time; the coda hides the stage entirely.
 - Images are requested progressively; slow connections see the LQIP.
 - The active section depends on JavaScript; without it the LQIP cover remains.
+- The slow drift animation pauses with its layer instead of resetting, so an
+  outgoing photograph never snaps back to 100% during a cross-fade.
 - Active-layer selection and photo descriptions must stay synchronized with
   the section markup.
 

@@ -27,7 +27,9 @@ poetry over changing images, on screens from small phones to wide monitors.
 - Responsive breakpoints: 1120px, 860px, 640px, and 380px; a dedicated short
   landscape rule keeps chapter content below the fixed header.
 - Motion: chapter content reveals with staggered fades, the active photograph
-  drifts slowly, and the stage cross-fades between chapters.
+  drifts slowly, and the stage cross-fades between chapters. When a chapter
+  changes, the outgoing drift pauses at its current frame instead of resetting,
+  so the photograph does not shrink during the cross-fade.
 - Reduced motion: animation and smooth scrolling are suppressed; reveal
   content is shown immediately.
 - Accessibility: skip link, semantic headings, visible focus outlines, native

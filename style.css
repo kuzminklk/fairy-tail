@@ -302,13 +302,28 @@ html:not(.js) .stage__layer:first-child {
 	visibility: visible;
 }
 
-/* Very slow Ken Burns drift on the active photograph */
-.stage__layer.is-active.is-loaded img {
-	animation: stage-drift 28s var(--ease-soft) both;
+/* Very slow Ken Burns drift.
+   The animation is attached to every loaded layer but only runs while the
+   layer is active. Pausing instead of removing it keeps the outgoing
+   photograph at its current scale during the cross-fade; removing the
+   animation snapped the image back to 100% and read as a layout jump. */
+.stage__layer.is-loaded img {
+	animation-duration: 28s;
+	animation-timing-function: var(--ease-soft);
+	animation-fill-mode: both;
+	animation-play-state: paused;
 }
 
-.stage__layer:nth-child(even).is-active.is-loaded img {
+.stage__layer:nth-child(odd).is-loaded img {
+	animation-name: stage-drift;
+}
+
+.stage__layer:nth-child(even).is-loaded img {
 	animation-name: stage-drift-alt;
+}
+
+.stage__layer.is-active.is-loaded img {
+	animation-play-state: running;
 }
 
 @keyframes stage-drift {
@@ -1876,7 +1891,7 @@ dialog[open]::backdrop {
 		transition-duration: 0.01ms !important;
 	}
 
-	.stage__layer.is-active.is-loaded img {
+	.stage__layer.is-loaded img {
 		animation: none !important;
 		transform: none !important;
 	}
