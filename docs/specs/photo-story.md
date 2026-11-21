@@ -37,6 +37,8 @@ ending, on one page.
   the header, counter, rail, and progress bar.
 - Stanzas fade in when a chapter enters the viewport. With reduced motion the
   text is shown without animation.
+- Fast scanning shows the pre-blurred stage placeholder; after scrolling stops,
+  the chapter's photograph sharpens in place.
 - Without JavaScript the whole poem is visible; photographs remain as blurred
   LQIP fields.
 - The epilogue leads into the frame filmstrip and footer.

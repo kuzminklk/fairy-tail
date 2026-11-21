@@ -15,7 +15,7 @@ Generate renditions offline with Python and Pillow:
 - WebP at 900, 1800, 2400, and 3600px long side, plus full-resolution WebP at
   the original dimensions;
 - JPEG at 900, 1800, and 2400px long side as a fallback;
-- 24px blurred LQIP placeholders;
+- 128px pre-blurred LQIP placeholders;
 - a `manifest.json` with dimensions, bytes, paths, and average color.
 
 Keep `photos/` untouched. In the browser, create a `<picture>` with actual

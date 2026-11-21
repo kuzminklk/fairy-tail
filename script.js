@@ -144,9 +144,11 @@
 	 */
 	const layerMedia = new Map()
 
-	const HIGH_RES_DELAY = 240
+	const PREVIEW_DELAY = 120
+	const HIGH_RES_DELAY = 500
 	const STAGE_CLEANUP_DELAY = 1900
 	let lastScrollAt = performance.now()
+	let previewTimer = 0
 	let highResolutionTimer = 0
 	let stageCleanupTimer = 0
 
@@ -255,6 +257,19 @@
 		}, HIGH_RES_DELAY)
 	}
 
+	function schedulePreviews(index) {
+		window.clearTimeout(previewTimer)
+		previewTimer = window.setTimeout(() => {
+			if (performance.now() - lastScrollAt < 160) {
+				schedulePreviews(index)
+				return
+			}
+			;[sections[index - 1], sections[index], sections[index + 1]].forEach((section) => {
+				if (section) loadPreview(layerByKey.get(section.dataset.layer))
+			})
+		}, PREVIEW_DELAY)
+	}
+
 	function scheduleStageCleanup() {
 		window.clearTimeout(stageCleanupTimer)
 		stageCleanupTimer = window.setTimeout(() => {
@@ -264,27 +279,15 @@
 		}, STAGE_CLEANUP_DELAY)
 	}
 
-	/** Warm up the current chapter and its neighbours, then plan the upgrade. */
+	/**
+	 * Wait until the reader settles before spending network/decoding on a real
+	 * preview. During a fast scan only the inline pre-blurred placeholder is
+	 * painted, which is already resident and cannot flash black.
+	 */
 	function updateStageMedia(index) {
-		;[sections[index - 1], sections[index], sections[index + 1]].forEach((section) => {
-			if (section) loadPreview(layerByKey.get(section.dataset.layer))
-		})
+		schedulePreviews(index)
 		scheduleHighResolution()
 		scheduleStageCleanup()
-	}
-
-	/**
-	 * Preload every chapter's small preview. The previews are intentionally
-	 * kept in memory: they are cheap (about 2 MB decoded each on a phone) and
-	 * guarantee that scanning in either direction always has a photograph
-	 * behind the text instead of a black stage.
-	 */
-	let previewsPrewarmed = false
-
-	function prewarmPreviews() {
-		if (previewsPrewarmed) return
-		previewsPrewarmed = true
-		layers.forEach((layer) => loadPreview(layer))
 	}
 
 	/* ---------------------------------------------------------------------- */
@@ -402,7 +405,6 @@
 		"scroll",
 		() => {
 			lastScrollAt = performance.now()
-			prewarmPreviews()
 			noteFastScroll()
 			requestScrollUpdate()
 		},
@@ -593,6 +595,34 @@
 			alt: "Вид сверху: девушка лежит в траве и поднимает руку к небу.",
 		},
 	]
+
+	/*
+	 * The coda is a contact sheet, not a second table of contents: deliberately
+	 * mix the frames so neighbouring shots do not follow the story order. Frame
+	 * numbers stay original (13, 04, 07…), which makes the sequence feel found
+	 * rather than enumerated.
+	 */
+	const FRAME_ORDER = [
+		"13-pines",
+		"04-away",
+		"07-portrait",
+		"15-dream",
+		"01-birch",
+		"11-clearing",
+		"16-dream-face",
+		"09-fern-path",
+		"02-birch-side",
+		"17-overhead",
+		"06-turning",
+		"12-fallen-log",
+		"03-canopy",
+		"10-walking",
+		"05-path-back",
+		"08-bending",
+		"14-pine-path",
+	]
+
+	photos.sort((a, b) => FRAME_ORDER.indexOf(a.slug) - FRAME_ORDER.indexOf(b.slug))
 
 	const track = document.querySelector("[data-frames-track]")
 	const framesPrev = document.querySelector("[data-frames-prev]")
@@ -813,13 +843,11 @@
 	const coverSection = sections[0]
 	if (coverSection) {
 		setActiveSection(coverSection, 0)
+		loadPreview(layerByKey.get("cover"))
+		loadPreview(layerByKey.get("prologue"))
 	}
 
 	updateScrollUI()
-
-	// Previews are small; start warming every chapter almost immediately so a
-	// fast scan never lands on a blank stage.
-	window.setTimeout(prewarmPreviews, 80)
 
 	// A tiny safety net: if the browser restores an old scroll position, make
 	// sure the matching chapter is active after layout settles.

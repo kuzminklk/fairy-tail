@@ -275,8 +275,11 @@ body.is-coda .chapter-rail {
 	height: 100lvh;
 	background-image: var(--lqip);
 	background-position: var(--pos, 50% 45%);
+	background-repeat: no-repeat;
 	background-size: cover;
-	filter: blur(26px) saturate(0.9);
+	/* The placeholder is pre-blurred in the asset pipeline; avoiding a runtime
+	   blur filter keeps it paintable during very fast scrolling. */
+	background-color: #0b120c;
 }
 
 /* The stage box follows the visible viewport, but the photograph is sized to
@@ -296,17 +299,13 @@ body.is-coda .chapter-rail {
 	object-fit: cover;
 	object-position: var(--pos, 50% 45%);
 	opacity: 0;
-	transition: opacity 1.2s var(--ease-soft);
+	transition: opacity 1.6s var(--ease-soft);
 }
 
 /* Preview and high-resolution renditions are stacked; each fades in when its
    own file is decoded. */
 .stage__layer img.is-visible {
 	opacity: 1;
-}
-
-.stage__layer img.stage-img--high {
-	transition-duration: 0.8s;
 }
 
 /* Without JavaScript no layer receives .is-active; keep the cover placeholder
@@ -860,15 +859,8 @@ html.js .is-revealed .scene__caption {
 }
 
 /* While the reader is skimming, do not make the typography wait for a
-   staggered reveal or keep several full-screen photographs cross-fading.
+   staggered reveal. Photographs keep their original slow cross-fade.
    The class is added by script.js and removed shortly after scrolling stops. */
-body.is-fast-scrolling .stage__layer,
-body.is-fast-scrolling .stage__layer.is-active,
-body.is-fast-scrolling .stage__layer img {
-	transition-duration: 0.12s !important;
-	transition-delay: 0s !important;
-}
-
 body.is-fast-scrolling .scene__head,
 body.is-fast-scrolling .poem > .stanza,
 body.is-fast-scrolling .scene__caption {

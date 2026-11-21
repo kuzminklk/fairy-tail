@@ -22,14 +22,16 @@ made landscape and Retina displays look soft.
   browsers without WebP.
 - The browser chooses the file from actual pixel-width descriptors. WebP is
   used when supported.
-- Stage photographs are loaded in two tiers. A single 900px preview is
-  prewarmed for every chapter shortly after the first paint and kept resident;
-  this makes a fast scan in either direction land on a photograph instead of a
-  black stage. The high-resolution rendition is requested only for the active
-  chapter after scrolling has been quiet for about a quarter of a second.
-- Only the active chapter keeps a high-resolution image. When the reader moves
-  to another chapter, the previous high-resolution layer is released after the
-  cross-fade; previews stay available.
+- Stage photographs are loaded in three tiers. Every layer carries an inline
+  128px pre-blurred placeholder, so even a fresh fast scan paints a photograph
+  immediately without network or runtime blur.
+- 900px previews are requested only after scrolling has been quiet for about
+  120 ms and are kept once loaded. A fast scan can cross all eleven chapters
+  without requesting a photograph file.
+- The high-resolution rendition is requested about 500 ms after the scroll
+  settles, only for the active chapter. When the reader moves on, the previous
+  high-resolution layer is released after the cross-fade; previews stay
+  available.
 - The stage box follows the visible viewport; its photographs are
   `object-fit: cover` and use a stable `100lvh` height, so mobile browser
   chrome hiding or reappearing does not resize the picture. Their `sizes` is
@@ -38,13 +40,14 @@ made landscape and Retina displays look soft.
   cover crop, which is wider than the viewport on portrait phones.
 - `sizes` is recomputed after window resize or device rotation, so a rotated
   phone upgrades to a suitable file.
-- Fast scrolling therefore requests preview files only; the sharp image is
-  decoded once the reader settles on a chapter.
+- Fast scrolling shows only the inline placeholders; once the reader settles,
+  the 900px preview and then the high-resolution image fade in over the
+  original 1.6 s image transition.
 - The cover preload requests the 900px preview on phones and the 2400px rendition
   on wider screens; it never preloads the full cover file.
 - The lightbox uses the same high-resolution `srcset` with a display-size hint.
-- All previews are loaded with `fetchPriority` auto; only the active high
-  resolution tier uses low priority and waits for idle scrolling.
+- Preview and high-resolution files are requested only from the idle timers;
+  high resolution uses low priority.
 
 ## Design notes
 
@@ -56,10 +59,12 @@ made landscape and Retina displays look soft.
   actual widths; `webpSrcset()` and `jpgSrcset()` build the high-resolution
   candidates; `stageSizes()` reads a hidden `100lvh` probe and
   `lightboxSizes()` calculates the lightbox hint.
-- `loadPreview()`, `loadHigh()` and `scheduleStageCleanup()` in `script.js`
-  implement the graduated tiers; `prewarmPreviews()` loads all eleven
-  previews, `lastScrollAt` gates the high-resolution request, and
+- `loadPreview()`, `loadHigh()`, `schedulePreviews()` and
+  `scheduleStageCleanup()` in `script.js` implement the graduated tiers;
+  `lastScrollAt` gates both the preview and high-resolution requests, and
   `scheduleStageCleanup()` releases only high-resolution layers.
+- The inline `--lqip` data URIs are generated from the 128px files in
+  `assets/photos/lqip/`; keep them in sync when the placeholders are regenerated.
 - Full-size WebP is not an upscale; it uses the original pixel dimensions.
 - The image pipeline is explained in
   [0004. Responsive image pipeline](../decisions/0004-responsive-image-pipeline.md).
@@ -78,10 +83,13 @@ made landscape and Retina displays look soft.
   files: 68 legacy renditions, 68 high-resolution renditions, and 17 LQIP.
 - Scrolling down and back up on a mobile device does not resize the stage
   photograph or re-select a smaller rendition.
-- A fast scroll requests preview files only; after it stops, exactly one
-  high-resolution image is requested for the visible chapter.
-- Fast scrolling never leaves an active chapter without a visible preview, and
-  its copy is revealed immediately.
-- At most the active high-resolution layer and all eleven preview layers remain
-  in the DOM after cleanup; previews are never released.
+- A fast scroll paints only the inline placeholders and requests no additional
+  photograph files; after it stops, the visible chapter loads a 900px preview
+  and then exactly one high-resolution image.
+- Fast scrolling never leaves an active chapter without a visible inline
+  placeholder, and its copy is revealed immediately.
+- At most the active high-resolution layer plus previews for visited chapters
+  remain in the DOM after cleanup; previews are never released.
+- The LQIP files are 128px wide, pre-blurred, and embedded as inline data URIs
+  in the stage layers.
 - No browser console errors, failed requests, or missing files.

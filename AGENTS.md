@@ -6,7 +6,7 @@
 
 Markup languages: HTML, CSS  
 Programming languages: JavaScript, Python  
-Images: WebP and JPEG renditions, responsive `srcset`, LQIP, graduated preview/high-resolution loading, original-resolution WebP  
+Images: WebP and JPEG renditions, responsive `srcset`, inline pre-blurred LQIP placeholders, graduated preview/high-resolution loading, original-resolution WebP  
 Typography: Cormorant Garamond, Manrope (local WOFF2 subsets)  
 Design: Full-screen photography, Fixed stage, Scroll-driven chapters, Dark theme  
 Accessibility: Semantic HTML, ARIA, Native `<dialog>`, Reduced motion, No-JavaScript fallback  
@@ -28,8 +28,8 @@ Do not edit files in `photos/`; generate web renditions through `scripts/optimiz
 Keep the poem in `index.html` and `poem.txt` in sync.  
 Keep actual `srcset` widths, `sizes` calculations, and `assets/photos/manifest.json` in sync when changing the image pipeline.  
 Keep the stage box viewport-sized and give its photograph layers a stable `100lvh` height; derive image `sizes` from the large viewport, not `window.innerHeight`, so mobile browser chrome cannot resize or re-select the picture.  
-Load stage photographs in two tiers: small 900px previews are prewarmed for every chapter and kept resident so fast scans never show an empty stage; only the active chapter upgrades to a high-resolution rendition after scrolling settles, and that tier is released when the reader moves on.  
-Keep fast scrolling readable: the fast-scroll mode reveals copy immediately and shortens stage fades; normal reveals stay gentle but brief.  
+Give every stage layer an inline pre-blurred placeholder (generated from `assets/photos/lqip/`): it must paint before any network image so fast scans never show black. Load 900px previews only after scrolling settles, keep them once loaded, and load the high-resolution tier for the active chapter after a further pause; release only high-resolution layers.  
+Keep fast scrolling readable: the fast-scroll mode reveals copy immediately; keep the original slow stage cross-fade and image fades rather than shortening them.  
 Keep the stage static; avoid full-screen transform animations that can break mobile clipping and repaint performance.  
 Preserve accessibility: skip link, focus states, native dialogs, reduced-motion support, and no-JavaScript readability.  
 Document behavior changes in `docs/specs` and architectural choices in `docs/decisions`.

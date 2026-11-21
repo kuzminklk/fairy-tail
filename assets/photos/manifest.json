@@ -65,9 +65,9 @@
 		},
 		"lqip": {
 			"file": "lqip/01-birch.jpg",
-			"width": 24,
-			"height": 36,
-			"bytes": 477
+			"width": 128,
+			"height": 192,
+			"bytes": 1409
 		},
 		"avgColor": "#70703c"
 	},
@@ -137,9 +137,9 @@
 		},
 		"lqip": {
 			"file": "lqip/02-birch-side.jpg",
-			"width": 24,
-			"height": 36,
-			"bytes": 477
+			"width": 128,
+			"height": 192,
+			"bytes": 1416
 		},
 		"avgColor": "#706f3c"
 	},
@@ -209,9 +209,9 @@
 		},
 		"lqip": {
 			"file": "lqip/03-canopy.jpg",
-			"width": 24,
-			"height": 36,
-			"bytes": 497
+			"width": 128,
+			"height": 192,
+			"bytes": 1496
 		},
 		"avgColor": "#6a6d30"
 	},
@@ -281,9 +281,9 @@
 		},
 		"lqip": {
 			"file": "lqip/04-away.jpg",
-			"width": 24,
-			"height": 36,
-			"bytes": 497
+			"width": 128,
+			"height": 192,
+			"bytes": 1524
 		},
 		"avgColor": "#5e5f2a"
 	},
@@ -353,9 +353,9 @@
 		},
 		"lqip": {
 			"file": "lqip/05-path-back.jpg",
-			"width": 24,
-			"height": 36,
-			"bytes": 496
+			"width": 128,
+			"height": 192,
+			"bytes": 1515
 		},
 		"avgColor": "#686930"
 	},
@@ -425,9 +425,9 @@
 		},
 		"lqip": {
 			"file": "lqip/06-turning.jpg",
-			"width": 24,
-			"height": 36,
-			"bytes": 507
+			"width": 128,
+			"height": 192,
+			"bytes": 1461
 		},
 		"avgColor": "#706f42"
 	},
@@ -497,9 +497,9 @@
 		},
 		"lqip": {
 			"file": "lqip/07-portrait.jpg",
-			"width": 24,
-			"height": 36,
-			"bytes": 503
+			"width": 128,
+			"height": 192,
+			"bytes": 1468
 		},
 		"avgColor": "#636337"
 	},
@@ -569,9 +569,9 @@
 		},
 		"lqip": {
 			"file": "lqip/08-bending.jpg",
-			"width": 24,
-			"height": 36,
-			"bytes": 495
+			"width": 128,
+			"height": 192,
+			"bytes": 1469
 		},
 		"avgColor": "#605f34"
 	},
@@ -641,9 +641,9 @@
 		},
 		"lqip": {
 			"file": "lqip/09-fern-path.jpg",
-			"width": 24,
-			"height": 36,
-			"bytes": 516
+			"width": 128,
+			"height": 192,
+			"bytes": 1662
 		},
 		"avgColor": "#6e7335"
 	},
@@ -713,9 +713,9 @@
 		},
 		"lqip": {
 			"file": "lqip/10-walking.jpg",
-			"width": 24,
-			"height": 36,
-			"bytes": 532
+			"width": 128,
+			"height": 192,
+			"bytes": 1658
 		},
 		"avgColor": "#666b2d"
 	},
@@ -785,9 +785,9 @@
 		},
 		"lqip": {
 			"file": "lqip/11-clearing.jpg",
-			"width": 24,
-			"height": 36,
-			"bytes": 528
+			"width": 128,
+			"height": 192,
+			"bytes": 1638
 		},
 		"avgColor": "#646a2b"
 	},
@@ -857,9 +857,9 @@
 		},
 		"lqip": {
 			"file": "lqip/12-fallen-log.jpg",
-			"width": 24,
-			"height": 36,
-			"bytes": 510
+			"width": 128,
+			"height": 192,
+			"bytes": 1596
 		},
 		"avgColor": "#5d5834"
 	},
@@ -929,9 +929,9 @@
 		},
 		"lqip": {
 			"file": "lqip/13-pines.jpg",
-			"width": 24,
-			"height": 36,
-			"bytes": 479
+			"width": 128,
+			"height": 192,
+			"bytes": 1401
 		},
 		"avgColor": "#505144"
 	},
@@ -1001,9 +1001,9 @@
 		},
 		"lqip": {
 			"file": "lqip/14-pine-path.jpg",
-			"width": 24,
-			"height": 36,
-			"bytes": 484
+			"width": 128,
+			"height": 192,
+			"bytes": 1448
 		},
 		"avgColor": "#4d4f3d"
 	},
@@ -1073,9 +1073,9 @@
 		},
 		"lqip": {
 			"file": "lqip/15-dream.jpg",
-			"width": 24,
-			"height": 36,
-			"bytes": 497
+			"width": 128,
+			"height": 192,
+			"bytes": 1512
 		},
 		"avgColor": "#554a33"
 	},
@@ -1145,9 +1145,9 @@
 		},
 		"lqip": {
 			"file": "lqip/16-dream-face.jpg",
-			"width": 24,
-			"height": 16,
-			"bytes": 371
+			"width": 128,
+			"height": 85,
+			"bytes": 825
 		},
 		"avgColor": "#605732"
 	},
@@ -1217,9 +1217,9 @@
 		},
 		"lqip": {
 			"file": "lqip/17-overhead.jpg",
-			"width": 24,
-			"height": 36,
-			"bytes": 486
+			"width": 128,
+			"height": 192,
+			"bytes": 1354
 		},
 		"avgColor": "#605936"
 	}

@@ -14,7 +14,7 @@ the complete set of web renditions consumed by the site:
         <slug>-2400.webp  long side 2400 px, WebP quality 80, method 6
         <slug>-3600.webp  long side 3600 px, WebP quality 80, method 6
         <slug>-full.webp  ORIGINAL pixel size (no resize), WebP q80 method 6
-        lqip/<slug>.jpg   ~24 px wide, blurred, JPEG quality 45
+        lqip/<slug>.jpg   ~128 px wide, pre-blurred, JPEG quality 55
         manifest.json     machine-readable index of every generated file
 
     web/fairy-tail/fonts/ six woff2 files copied verbatim from forest-gallery
@@ -133,9 +133,9 @@ JPEG_QUALITY = 84
 WEBP_QUALITY = 80
 WEBP_METHOD = 6                   # slowest / best WebP compression
 LQIP_REF_SIZE = 900               # long side the LQIP is derived from
-LQIP_WIDTH = 24                   # placeholder width in px (~24 px "wide")
-LQIP_QUALITY = 45
-LQIP_BLUR_RADIUS = 0.6            # Gaussian blur applied to the tiny placeholder
+LQIP_WIDTH = 128                  # placeholder width in px (pre-blurred, inline)
+LQIP_QUALITY = 55
+LQIP_BLUR_RADIUS = 6.0            # Gaussian blur baked into the placeholder
 SHARPEN = ImageFilter.UnsharpMask(radius=1.0, percent=60, threshold=3)
 
 SRGB_DESCRIPTION = "srgb"         # case-insensitive marker of an sRGB profile

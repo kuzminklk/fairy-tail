@@ -17,7 +17,7 @@ pointers, and touch.
 ## Behavior
 
 - A horizontal filmstrip after the epilogue shows all seventeen frames with
-  their original numbers.
+  their original numbers in a deliberately mixed, non-chronological order.
 - The strip scrolls with pointer, touch, or previous/next buttons.
 - Selecting a frame opens a native dialog with the high-resolution photograph,
   a caption, a counter, previous/next buttons, and a close button.
@@ -41,7 +41,8 @@ pointers, and touch.
 
 ## Acceptance criteria
 
-- Seventeen frames render with numbers 01–17 and correct accessible names.
+- Seventeen frames render with their original numbers (01–17) in a mixed order
+  and with correct accessible names.
 - The filmstrip scrolls and previous/next buttons move it by most of a viewport.
 - The lightbox opens, changes photographs with arrows and swipe, and closes
   with Escape or the close button.

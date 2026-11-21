@@ -11,7 +11,7 @@ Markup languages: HTML, CSS
 Programming languages: JavaScript, Python  
 Design: Full-screen photography, Fixed stage, Cinematic typography, Dark theme  
 Typography: Cormorant Garamond, Manrope  
-Images: WebP and JPEG, Responsive `srcset`, LQIP, Graduated preview and high-resolution loading, Original-resolution renditions  
+Images: WebP and JPEG, Responsive `srcset`, Inline pre-blurred LQIP placeholders, Graduated preview and high-resolution loading, Original-resolution renditions  
 Accessibility: Semantic HTML, ARIA, Keyboard navigation, Reduced motion, No-JavaScript fallback  
 Formatting: “.editorconfig”, “.vscode/…”, Prettier, Ruff  
 Version Control: Git, GitHub
@@ -31,7 +31,7 @@ Developed using DeepSeek Harness with 4.1 Flash model
 1. Developed the fairy tale in Russian verse from the photographs
 2. Implemented the full-screen photo stage and chapter navigation
 3. Improved the responsive layout, accessibility and no-JavaScript fallback
-4. Added high-resolution renditions, graduated stage image loading, and a fast-scroll presentation
+4. Added high-resolution renditions, inline blurred placeholders for fast scrolling, and a deliberately mixed filmstrip
 5. Documented the project, its features and architectural decisions
 
 ### To-dos

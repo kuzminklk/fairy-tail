@@ -16,9 +16,10 @@ sized to the large viewport (`100lvh`): mobile browser chrome can hide or
 reappear without rescaling the picture, and the extra area is clipped by the
 stage. `script.js` selects the active section at a 42% focus line, loads the
 matching photograph into that layer, and cross-fades opacity between layers.
-Every layer gets a small preview that is prewarmed and kept resident; only the
-active layer upgrades to the high-resolution tier after scrolling settles. Each layer paints a 24px
-LQIP from inline CSS before the sharp image loads.
+Every layer has an inline pre-blurred placeholder. A 900px preview is loaded
+only after scrolling settles, and only the active layer upgrades to the
+high-resolution tier after a further pause; previews are kept once loaded. Each layer paints a 128px
+pre-blurred LQIP from inline CSS before any network image loads.
 
 ## Alternatives
 
