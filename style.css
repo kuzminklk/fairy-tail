@@ -38,8 +38,9 @@
 	font-weight: 300 700;
 	font-style: normal;
 	font-display: swap;
-	unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
-		U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+	unicode-range:
+		U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC,
+		U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
 @font-face {
@@ -57,8 +58,9 @@
 	font-weight: 300 700;
 	font-style: italic;
 	font-display: swap;
-	unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
-		U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+	unicode-range:
+		U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC,
+		U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
 @font-face {
@@ -76,8 +78,9 @@
 	font-weight: 200 800;
 	font-style: normal;
 	font-display: swap;
-	unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
-		U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+	unicode-range:
+		U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC,
+		U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
 /* 02. Design tokens */
@@ -334,7 +337,13 @@ html:not(.js) .stage__layer:first-child {
 	pointer-events: none;
 	background:
 		radial-gradient(120% 90% at 72% 30%, transparent 38%, rgba(4, 8, 5, 0.38) 100%),
-		linear-gradient(90deg, rgba(4, 8, 5, 0.8) 0%, rgba(4, 8, 5, 0.54) 30%, rgba(4, 8, 5, 0.16) 58%, rgba(4, 8, 5, 0.3) 100%),
+		linear-gradient(
+			90deg,
+			rgba(4, 8, 5, 0.8) 0%,
+			rgba(4, 8, 5, 0.54) 30%,
+			rgba(4, 8, 5, 0.16) 58%,
+			rgba(4, 8, 5, 0.3) 100%
+		),
 		linear-gradient(0deg, rgba(4, 8, 5, 0.86) 0%, transparent 38%),
 		linear-gradient(180deg, rgba(4, 8, 5, 0.46) 0%, transparent 22%);
 }
@@ -1653,7 +1662,13 @@ dialog[open]::backdrop {
 	.stage__veil {
 		background:
 			radial-gradient(120% 80% at 60% 28%, transparent 30%, rgba(4, 8, 5, 0.42) 100%),
-			linear-gradient(180deg, rgba(4, 8, 5, 0.34) 0%, rgba(4, 8, 5, 0.18) 28%, rgba(4, 8, 5, 0.78) 72%, rgba(4, 8, 5, 0.94) 100%),
+			linear-gradient(
+				180deg,
+				rgba(4, 8, 5, 0.34) 0%,
+				rgba(4, 8, 5, 0.18) 28%,
+				rgba(4, 8, 5, 0.78) 72%,
+				rgba(4, 8, 5, 0.94) 100%
+			),
 			linear-gradient(90deg, rgba(4, 8, 5, 0.5), rgba(4, 8, 5, 0.12) 55%, rgba(4, 8, 5, 0.34));
 	}
 

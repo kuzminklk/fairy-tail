@@ -18,22 +18,22 @@
  * Everything degrades gracefully: without JavaScript the verse is fully
  * readable and the LQIP photographs remain as a soft backdrop.
  */
-(() => {
-	"use strict";
+;(() => {
+	"use strict"
 
 	/* ---------------------------------------------------------------------- */
 	/* Helpers                                                                */
 	/* ---------------------------------------------------------------------- */
 
-	const body = document.body;
-	const html = document.documentElement;
-	const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+	const body = document.body
+	const html = document.documentElement
+	const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)")
 
 	/** Scroll behaviour that respects the user's motion preference. */
-	const scrollBehavior = () => (reduceMotion.matches ? "auto" : "smooth");
+	const scrollBehavior = () => (reduceMotion.matches ? "auto" : "smooth")
 
 	/** The closest section to the viewport's "focus line" (42% from top). */
-	const focusLine = () => window.innerHeight * 0.42;
+	const focusLine = () => window.innerHeight * 0.42
 
 	/**
 	 * Section that owns the story right now. The body is a linear sequence of
@@ -41,37 +41,37 @@
 	 * focus line is the one the reader is looking at.
 	 */
 	function findActiveSection(sections) {
-		let active = sections[0];
+		let active = sections[0]
 		for (const section of sections) {
 			if (section.getBoundingClientRect().top <= focusLine()) {
-				active = section;
+				active = section
 			}
 		}
-		return active;
+		return active
 	}
 
 	/* ---------------------------------------------------------------------- */
 	/* Stage: lazy full-screen photographs                                    */
 	/* ---------------------------------------------------------------------- */
 
-	const layers = Array.from(document.querySelectorAll(".stage__layer"));
-	const layerByKey = new Map(layers.map((layer) => [layer.dataset.layer, layer]));
+	const layers = Array.from(document.querySelectorAll(".stage__layer"))
+	const layerByKey = new Map(layers.map((layer) => [layer.dataset.layer, layer]))
 
 	/** Stage layers whose real photograph has been requested already. */
-	const requestedLayers = new Set();
+	const requestedLayers = new Set()
 
 	/* The one landscape frame in the collection. All other photographs are
 	   2:3 portraits. Their real pixel widths differ, so width descriptors must
 	   be taken from the actual renditions, not from their long-side names. */
-	const LANDSCAPE_SLUGS = new Set(["16-dream-face"]);
+	const LANDSCAPE_SLUGS = new Set(["16-dream-face"])
 
-	const isLandscape = (slug) => LANDSCAPE_SLUGS.has(slug);
+	const isLandscape = (slug) => LANDSCAPE_SLUGS.has(slug)
 
 	/** Actual pixel widths of the generated renditions, keyed by file suffix. */
 	function renditionWidths(slug) {
 		return isLandscape(slug)
 			? { 900: 900, 1800: 1800, 2400: 2400, 3600: 3600, full: 5472 }
-			: { 900: 600, 1800: 1200, 2400: 1600, 3600: 2400, full: 3648 };
+			: { 900: 600, 1800: 1200, 2400: 1600, 3600: 2400, full: 3648 }
 	}
 
 	/**
@@ -80,23 +80,23 @@
 	 * 2400px long side to keep the legacy path reasonable.
 	 */
 	function webpSrcset(slug) {
-		const w = renditionWidths(slug);
+		const w = renditionWidths(slug)
 		return [
 			`assets/photos/${slug}-900.webp ${w[900]}w`,
 			`assets/photos/${slug}-1800.webp ${w[1800]}w`,
 			`assets/photos/${slug}-2400.webp ${w[2400]}w`,
 			`assets/photos/${slug}-3600.webp ${w[3600]}w`,
 			`assets/photos/${slug}-full.webp ${w.full}w`,
-		].join(", ");
+		].join(", ")
 	}
 
 	function jpgSrcset(slug) {
-		const w = renditionWidths(slug);
+		const w = renditionWidths(slug)
 		return [
 			`assets/photos/${slug}-900.jpg ${w[900]}w`,
 			`assets/photos/${slug}-1800.jpg ${w[1800]}w`,
 			`assets/photos/${slug}-2400.jpg ${w[2400]}w`,
-		].join(", ");
+		].join(", ")
 	}
 
 	/**
@@ -106,11 +106,11 @@
 	 * from under-selecting a small file and keeps the landscape view sharp.
 	 */
 	function stageSizes(slug) {
-		const viewportWidth = window.innerWidth;
-		const viewportHeight = window.innerHeight;
-		const imageRatio = isLandscape(slug) ? 3 / 2 : 2 / 3;
-		const renderedWidth = Math.max(viewportWidth, viewportHeight * imageRatio);
-		return `${Math.ceil(renderedWidth)}px`;
+		const viewportWidth = window.innerWidth
+		const viewportHeight = window.innerHeight
+		const imageRatio = isLandscape(slug) ? 3 / 2 : 2 / 3
+		const renderedWidth = Math.max(viewportWidth, viewportHeight * imageRatio)
+		return `${Math.ceil(renderedWidth)}px`
 	}
 
 	/**
@@ -119,207 +119,207 @@
 	 * is from a blurred colour field to the sharp photograph.
 	 */
 	function loadLayer(layer) {
-		if (!layer || requestedLayers.has(layer.dataset.layer)) return;
-		requestedLayers.add(layer.dataset.layer);
+		if (!layer || requestedLayers.has(layer.dataset.layer)) return
+		requestedLayers.add(layer.dataset.layer)
 
-		const slug = layer.dataset.photo;
-		const sizes = stageSizes(slug);
-		const picture = document.createElement("picture");
-		const source = document.createElement("source");
-		const img = document.createElement("img");
+		const slug = layer.dataset.photo
+		const sizes = stageSizes(slug)
+		const picture = document.createElement("picture")
+		const source = document.createElement("source")
+		const img = document.createElement("img")
 
-		source.type = "image/webp";
-		source.srcset = webpSrcset(slug);
-		source.sizes = sizes;
+		source.type = "image/webp"
+		source.srcset = webpSrcset(slug)
+		source.sizes = sizes
 
-		img.src = `assets/photos/${slug}-2400.jpg`;
-		img.srcset = jpgSrcset(slug);
-		img.sizes = sizes;
-		img.alt = "";
-		img.decoding = "async";
-		img.loading = "eager";
-		img.fetchPriority = layer.dataset.layer === "cover" ? "high" : "auto";
+		img.src = `assets/photos/${slug}-2400.jpg`
+		img.srcset = jpgSrcset(slug)
+		img.sizes = sizes
+		img.alt = ""
+		img.decoding = "async"
+		img.loading = "eager"
+		img.fetchPriority = layer.dataset.layer === "cover" ? "high" : "auto"
 
-		const markLoaded = () => layer.classList.add("is-loaded");
-		img.addEventListener("load", markLoaded, { once: true });
-		img.addEventListener("error", markLoaded, { once: true });
+		const markLoaded = () => layer.classList.add("is-loaded")
+		img.addEventListener("load", markLoaded, { once: true })
+		img.addEventListener("error", markLoaded, { once: true })
 
-		picture.append(source, img);
-		layer.append(picture);
+		picture.append(source, img)
+		layer.append(picture)
 
 		// Cached images may already be complete before listeners attach.
-		if (img.complete) markLoaded();
+		if (img.complete) markLoaded()
 	}
 
 	/* ---------------------------------------------------------------------- */
 	/* Story sections                                                         */
 	/* ---------------------------------------------------------------------- */
 
-	const sections = Array.from(document.querySelectorAll("[data-scene]"));
-	const storySections = sections.filter((section) => !section.classList.contains("cover"));
+	const sections = Array.from(document.querySelectorAll("[data-scene]"))
+	const storySections = sections.filter((section) => !section.classList.contains("cover"))
 
-	const headerNumeral = document.querySelector("[data-chapter-numeral]");
-	const headerTitle = document.querySelector("[data-chapter-title]");
-	const headerCounter = document.querySelector("[data-counter]");
-	const rail = document.querySelector("[data-rail]");
-	const progressBar = document.querySelector("[data-progress]");
-	const header = document.querySelector(".site-header");
-	const framesSection = document.querySelector(".frames");
+	const headerNumeral = document.querySelector("[data-chapter-numeral]")
+	const headerTitle = document.querySelector("[data-chapter-title]")
+	const headerCounter = document.querySelector("[data-counter]")
+	const rail = document.querySelector("[data-rail]")
+	const progressBar = document.querySelector("[data-progress]")
+	const header = document.querySelector(".site-header")
+	const framesSection = document.querySelector(".frames")
 
-	const pad = (value) => String(value).padStart(2, "0");
+	const pad = (value) => String(value).padStart(2, "0")
 
 	/* ---- Chapter rail (built from the story sections) --------------------- */
 
-	const railButtons = [];
+	const railButtons = []
 
 	storySections.forEach((section, index) => {
-		const button = document.createElement("button");
-		button.type = "button";
-		button.className = "rail-dot";
-		button.setAttribute("aria-label", `Глава ${index + 1}: ${section.dataset.title || section.dataset.chapter}`);
+		const button = document.createElement("button")
+		button.type = "button"
+		button.className = "rail-dot"
+		button.setAttribute("aria-label", `Глава ${index + 1}: ${section.dataset.title || section.dataset.chapter}`)
 
-		const label = document.createElement("span");
-		label.className = "rail-dot__label";
-		label.textContent = section.dataset.title || "";
-		button.append(label);
+		const label = document.createElement("span")
+		label.className = "rail-dot__label"
+		label.textContent = section.dataset.title || ""
+		button.append(label)
 
 		button.addEventListener("click", () => {
-			section.scrollIntoView({ behavior: scrollBehavior(), block: "start" });
-		});
+			section.scrollIntoView({ behavior: scrollBehavior(), block: "start" })
+		})
 
-		rail?.append(button);
-		railButtons.push(button);
-	});
+		rail?.append(button)
+		railButtons.push(button)
+	})
 
-	let activeLayerKey = null;
-	let activeSection = null;
+	let activeLayerKey = null
+	let activeSection = null
 
 	/**
 	 * Switch the fixed background, header chapter, counter and rail state.
 	 * Also warms up the neighbouring photographs so the next chapter is ready.
 	 */
 	function setActiveSection(section, index) {
-		activeSection = section;
+		activeSection = section
 
-		const layerKey = section.dataset.layer;
+		const layerKey = section.dataset.layer
 		if (layerKey !== activeLayerKey) {
-			activeLayerKey = layerKey;
-			layers.forEach((layer) => layer.classList.toggle("is-active", layer.dataset.layer === layerKey));
+			activeLayerKey = layerKey
+			layers.forEach((layer) => layer.classList.toggle("is-active", layer.dataset.layer === layerKey))
 
 			// Load this chapter and its immediate neighbours.
-			const layer = layerByKey.get(layerKey);
-			loadLayer(layer);
-			loadLayer(layerByKey.get(sections[index - 1]?.dataset.layer));
-			loadLayer(layerByKey.get(sections[index + 1]?.dataset.layer));
+			const layer = layerByKey.get(layerKey)
+			loadLayer(layer)
+			loadLayer(layerByKey.get(sections[index - 1]?.dataset.layer))
+			loadLayer(layerByKey.get(sections[index + 1]?.dataset.layer))
 		}
 
 		// Header copy.
-		const isCover = section.classList.contains("cover");
-		if (headerNumeral) headerNumeral.textContent = section.dataset.chapter || "Пролог";
-		if (headerTitle) headerTitle.textContent = section.dataset.title || "На опушке";
+		const isCover = section.classList.contains("cover")
+		if (headerNumeral) headerNumeral.textContent = section.dataset.chapter || "Пролог"
+		if (headerTitle) headerTitle.textContent = section.dataset.title || "На опушке"
 
-		const storyIndex = storySections.indexOf(section);
+		const storyIndex = storySections.indexOf(section)
 		if (headerCounter) {
-			headerCounter.textContent = isCover ? "—" : `${pad(storyIndex + 1)} / ${pad(storySections.length)}`;
+			headerCounter.textContent = isCover ? "—" : `${pad(storyIndex + 1)} / ${pad(storySections.length)}`
 		}
 
 		// Rail dots.
 		railButtons.forEach((button, i) => {
-			const isActive = i === storyIndex;
-			button.classList.toggle("is-active", isActive);
-			if (isActive) button.setAttribute("aria-current", "step");
-			else button.removeAttribute("aria-current");
-		});
+			const isActive = i === storyIndex
+			button.classList.toggle("is-active", isActive)
+			if (isActive) button.setAttribute("aria-current", "step")
+			else button.removeAttribute("aria-current")
+		})
 	}
 
 	/* ---------------------------------------------------------------------- */
 	/* Scroll orchestration                                                   */
 	/* ---------------------------------------------------------------------- */
 
-	let ticking = false;
+	let ticking = false
 
 	function updateScrollUI() {
-		const active = findActiveSection(sections);
+		const active = findActiveSection(sections)
 		if (active !== activeSection) {
-			setActiveSection(active, sections.indexOf(active));
+			setActiveSection(active, sections.indexOf(active))
 		}
 
 		// Page progress bar.
-		const max = html.scrollHeight - window.innerHeight;
-		const progress = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
-		html.style.setProperty("--progress", progress.toFixed(4));
+		const max = html.scrollHeight - window.innerHeight
+		const progress = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0
+		html.style.setProperty("--progress", progress.toFixed(4))
 
 		// Header gets a little more solid once we leave the cover.
-		header?.classList.toggle("is-scrolled", window.scrollY > window.innerHeight * 0.4);
+		header?.classList.toggle("is-scrolled", window.scrollY > window.innerHeight * 0.4)
 
 		// When the coda arrives the photographs step aside for the filmstrip.
 		if (framesSection) {
-			body.classList.toggle("is-coda", framesSection.getBoundingClientRect().top < window.innerHeight * 0.55);
+			body.classList.toggle("is-coda", framesSection.getBoundingClientRect().top < window.innerHeight * 0.55)
 		}
 
-		ticking = false;
+		ticking = false
 	}
 
 	function requestScrollUpdate() {
-		if (ticking) return;
-		ticking = true;
-		requestAnimationFrame(updateScrollUI);
+		if (ticking) return
+		ticking = true
+		requestAnimationFrame(updateScrollUI)
 	}
 
-	window.addEventListener("scroll", requestScrollUpdate, { passive: true });
-	window.addEventListener("resize", requestScrollUpdate);
+	window.addEventListener("scroll", requestScrollUpdate, { passive: true })
+	window.addEventListener("resize", requestScrollUpdate)
 
 	/* ---------------------------------------------------------------------- */
 	/* Reveal the verse as each chapter enters                                */
 	/* ---------------------------------------------------------------------- */
 
-	const revealTargets = Array.from(document.querySelectorAll(".scene, .finale"));
+	const revealTargets = Array.from(document.querySelectorAll(".scene, .finale"))
 
 	if ("IntersectionObserver" in window) {
 		const revealObserver = new IntersectionObserver(
 			(entries) => {
 				entries.forEach((entry) => {
 					if (entry.isIntersecting) {
-						entry.target.classList.add("is-revealed");
-						revealObserver.unobserve(entry.target);
+						entry.target.classList.add("is-revealed")
+						revealObserver.unobserve(entry.target)
 					}
-				});
+				})
 			},
 			{ rootMargin: "0px 0px -22% 0px", threshold: 0.12 },
-		);
+		)
 
-		revealTargets.forEach((target) => revealObserver.observe(target));
+		revealTargets.forEach((target) => revealObserver.observe(target))
 	} else {
-		revealTargets.forEach((target) => target.classList.add("is-revealed"));
+		revealTargets.forEach((target) => target.classList.add("is-revealed"))
 	}
 
 	/* ---------------------------------------------------------------------- */
 	/* Chapter index dialog                                                   */
 	/* ---------------------------------------------------------------------- */
 
-	const chaptersDialog = document.querySelector("#chapters");
-	const chaptersOpen = document.querySelector("[data-open-chapters]");
+	const chaptersDialog = document.querySelector("#chapters")
+	const chaptersOpen = document.querySelector("[data-open-chapters]")
 
 	chaptersOpen?.addEventListener("click", () => {
-		if (!chaptersDialog || chaptersDialog.open) return;
-		chaptersDialog.showModal();
-		body.classList.add("is-locked");
-	});
+		if (!chaptersDialog || chaptersDialog.open) return
+		chaptersDialog.showModal()
+		body.classList.add("is-locked")
+	})
 
-	chaptersDialog?.addEventListener("close", () => body.classList.remove("is-locked"));
+	chaptersDialog?.addEventListener("close", () => body.classList.remove("is-locked"))
 
-	document.querySelector("[data-close-chapters]")?.addEventListener("click", () => chaptersDialog?.close());
+	document.querySelector("[data-close-chapters]")?.addEventListener("click", () => chaptersDialog?.close())
 
 	// Close the index, then glide to the chosen chapter.
 	chaptersDialog?.querySelectorAll('a[href^="#"]').forEach((link) => {
 		link.addEventListener("click", (event) => {
-			const target = document.querySelector(link.getAttribute("href"));
-			if (!target) return;
-			event.preventDefault();
-			chaptersDialog.close();
-			requestAnimationFrame(() => target.scrollIntoView({ behavior: scrollBehavior(), block: "start" }));
-		});
-	});
+			const target = document.querySelector(link.getAttribute("href"))
+			if (!target) return
+			event.preventDefault()
+			chaptersDialog.close()
+			requestAnimationFrame(() => target.scrollIntoView({ behavior: scrollBehavior(), block: "start" }))
+		})
+	})
 
 	/* ---------------------------------------------------------------------- */
 	/* Coda: all 17 frames + lightbox                                         */
@@ -330,179 +330,239 @@
 	 * number in the original photo collection, `caption` is the poetic label.
 	 */
 	const photos = [
-		{ slug: "01-birch", num: "01", caption: "Берёза, утро", alt: "Девушка с золотистыми волосами касается белого ствола берёзы в высокой траве." },
-		{ slug: "02-birch-side", num: "02", caption: "Белая кора", alt: "Девушка стоит у берёзы в солнечном лесу, вид сбоку." },
-		{ slug: "03-canopy", num: "03", caption: "Свет сквозь листву", alt: "Девушка поднимает лицо к зелёным кронам и солнечному свету." },
+		{
+			slug: "01-birch",
+			num: "01",
+			caption: "Берёза, утро",
+			alt: "Девушка с золотистыми волосами касается белого ствола берёзы в высокой траве.",
+		},
+		{
+			slug: "02-birch-side",
+			num: "02",
+			caption: "Белая кора",
+			alt: "Девушка стоит у берёзы в солнечном лесу, вид сбоку.",
+		},
+		{
+			slug: "03-canopy",
+			num: "03",
+			caption: "Свет сквозь листву",
+			alt: "Девушка поднимает лицо к зелёным кронам и солнечному свету.",
+		},
 		{ slug: "04-away", num: "04", caption: "Шаг вглубь", alt: "Девушка уходит в лес, раскинув руки, вид со спины." },
-		{ slug: "05-path-back", num: "05", caption: "За спиной", alt: "Девушка идёт по лесной тропе, обернувшись через плечо." },
-		{ slug: "06-turning", num: "06", caption: "Обернулась", alt: "Девушка оборачивается к камере в зелёном лесном свете." },
+		{
+			slug: "05-path-back",
+			num: "05",
+			caption: "За спиной",
+			alt: "Девушка идёт по лесной тропе, обернувшись через плечо.",
+		},
+		{
+			slug: "06-turning",
+			num: "06",
+			caption: "Обернулась",
+			alt: "Девушка оборачивается к камере в зелёном лесном свете.",
+		},
 		{ slug: "07-portrait", num: "07", caption: "Тишина", alt: "Портрет девушки, поправляющей волосы, среди деревьев." },
-		{ slug: "08-bending", num: "08", caption: "Поклон лесу", alt: "Девушка наклоняется вперёд, длинные волосы падают на лицо." },
-		{ slug: "09-fern-path", num: "09", caption: "Тропа", alt: "Девушка идёт по тропинке среди папоротников и поваленных стволов." },
+		{
+			slug: "08-bending",
+			num: "08",
+			caption: "Поклон лесу",
+			alt: "Девушка наклоняется вперёд, длинные волосы падают на лицо.",
+		},
+		{
+			slug: "09-fern-path",
+			num: "09",
+			caption: "Тропа",
+			alt: "Девушка идёт по тропинке среди папоротников и поваленных стволов.",
+		},
 		{ slug: "10-walking", num: "10", caption: "В глубину", alt: "Девушка уходит по тропе вглубь леса." },
 		{ slug: "11-clearing", num: "11", caption: "Поляна", alt: "Девушка стоит на лесной поляне и смотрит вверх." },
-		{ slug: "12-fallen-log", num: "12", caption: "Поваленный ствол", alt: "Девушка сидит на большом поваленном стволе сосны, опустив глаза." },
+		{
+			slug: "12-fallen-log",
+			num: "12",
+			caption: "Поваленный ствол",
+			alt: "Девушка сидит на большом поваленном стволе сосны, опустив глаза.",
+		},
 		{ slug: "13-pines", num: "13", caption: "Сосны", alt: "Девушка стоит среди высоких сосен в солнечном свете." },
-		{ slug: "14-pine-path", num: "14", caption: "Сосновая тропа", alt: "Девушка идёт по тропе между соснами, неся обувь в руке." },
-		{ slug: "15-dream", num: "15", caption: "Сон", alt: "Девушка лежит в траве с закрытыми глазами, руки сложены на груди." },
-		{ slug: "16-dream-face", num: "16", caption: "Лицо к небу", alt: "Крупный план: лицо девушки, лежащей в траве, обращено к солнцу." },
-		{ slug: "17-overhead", num: "17", caption: "Над землёй", alt: "Вид сверху: девушка лежит в траве и поднимает руку к небу." },
-	];
+		{
+			slug: "14-pine-path",
+			num: "14",
+			caption: "Сосновая тропа",
+			alt: "Девушка идёт по тропе между соснами, неся обувь в руке.",
+		},
+		{
+			slug: "15-dream",
+			num: "15",
+			caption: "Сон",
+			alt: "Девушка лежит в траве с закрытыми глазами, руки сложены на груди.",
+		},
+		{
+			slug: "16-dream-face",
+			num: "16",
+			caption: "Лицо к небу",
+			alt: "Крупный план: лицо девушки, лежащей в траве, обращено к солнцу.",
+		},
+		{
+			slug: "17-overhead",
+			num: "17",
+			caption: "Над землёй",
+			alt: "Вид сверху: девушка лежит в траве и поднимает руку к небу.",
+		},
+	]
 
-	const track = document.querySelector("[data-frames-track]");
-	const framesPrev = document.querySelector("[data-frames-prev]");
-	const framesNext = document.querySelector("[data-frames-next]");
+	const track = document.querySelector("[data-frames-track]")
+	const framesPrev = document.querySelector("[data-frames-prev]")
+	const framesNext = document.querySelector("[data-frames-next]")
 
 	/** Build the filmstrip once, from the metadata above. */
 	function buildFrames() {
-		if (!track) return;
+		if (!track) return
 
 		photos.forEach((photo, index) => {
-			const button = document.createElement("button");
-			button.type = "button";
-			button.className = "frame";
-			button.dataset.index = String(index);
-			button.setAttribute("aria-label", `Открыть кадр ${photo.num}: ${photo.caption}`);
+			const button = document.createElement("button")
+			button.type = "button"
+			button.className = "frame"
+			button.dataset.index = String(index)
+			button.setAttribute("aria-label", `Открыть кадр ${photo.num}: ${photo.caption}`)
 
-			const picture = document.createElement("picture");
-			const source = document.createElement("source");
-			const img = document.createElement("img");
+			const picture = document.createElement("picture")
+			const source = document.createElement("source")
+			const img = document.createElement("img")
 
-			source.type = "image/webp";
-			source.srcset = `assets/photos/${photo.slug}-900.webp`;
+			source.type = "image/webp"
+			source.srcset = `assets/photos/${photo.slug}-900.webp`
 
-			img.src = `assets/photos/${photo.slug}-900.jpg`;
-			img.alt = "";
-			img.loading = "lazy";
-			img.decoding = "async";
+			img.src = `assets/photos/${photo.slug}-900.jpg`
+			img.alt = ""
+			img.loading = "lazy"
+			img.decoding = "async"
 			// Intrinsic size hints prevent layout shift while the strip lazy-loads.
-			img.width = 600;
-			img.height = photo.slug === "16-dream-face" ? 400 : 900;
+			img.width = 600
+			img.height = photo.slug === "16-dream-face" ? 400 : 900
 
-			const markLoaded = () => button.classList.add("is-loaded");
-			img.addEventListener("load", markLoaded, { once: true });
-			img.addEventListener("error", markLoaded, { once: true });
-			if (img.complete) markLoaded();
+			const markLoaded = () => button.classList.add("is-loaded")
+			img.addEventListener("load", markLoaded, { once: true })
+			img.addEventListener("error", markLoaded, { once: true })
+			if (img.complete) markLoaded()
 
-			const number = document.createElement("span");
-			number.className = "frame__num";
-			number.textContent = photo.num;
-			number.setAttribute("aria-hidden", "true");
+			const number = document.createElement("span")
+			number.className = "frame__num"
+			number.textContent = photo.num
+			number.setAttribute("aria-hidden", "true")
 
-			if (photo.slug === "16-dream-face") button.classList.add("frame--wide");
+			if (photo.slug === "16-dream-face") button.classList.add("frame--wide")
 
-			picture.append(source, img);
-			button.append(picture, number);
-			button.addEventListener("click", () => openLightbox(index));
-			track.append(button);
-		});
+			picture.append(source, img)
+			button.append(picture, number)
+			button.addEventListener("click", () => openLightbox(index))
+			track.append(button)
+		})
 	}
 
 	const stepFrames = (direction) => {
-		if (!track) return;
-		track.scrollBy({ left: direction * track.clientWidth * 0.82, behavior: scrollBehavior() });
-	};
+		if (!track) return
+		track.scrollBy({ left: direction * track.clientWidth * 0.82, behavior: scrollBehavior() })
+	}
 
-	framesPrev?.addEventListener("click", () => stepFrames(-1));
-	framesNext?.addEventListener("click", () => stepFrames(1));
+	framesPrev?.addEventListener("click", () => stepFrames(-1))
+	framesNext?.addEventListener("click", () => stepFrames(1))
 
 	/* ---- Lightbox --------------------------------------------------------- */
 
-	const lightbox = document.querySelector("#lightbox");
-	const lightboxPictureSource = lightbox?.querySelector("picture source");
-	const lightboxImg = lightbox?.querySelector("img");
-	const lightboxCaption = lightbox?.querySelector("[data-lightbox-caption]");
-	const lightboxCounter = lightbox?.querySelector("[data-lightbox-counter]");
-	const lightboxClose = lightbox?.querySelector("[data-lightbox-close]");
-	const lightboxPrev = lightbox?.querySelector("[data-lightbox-prev]");
-	const lightboxNext = lightbox?.querySelector("[data-lightbox-next]");
-	let lightboxIndex = 0;
+	const lightbox = document.querySelector("#lightbox")
+	const lightboxPictureSource = lightbox?.querySelector("picture source")
+	const lightboxImg = lightbox?.querySelector("img")
+	const lightboxCaption = lightbox?.querySelector("[data-lightbox-caption]")
+	const lightboxCounter = lightbox?.querySelector("[data-lightbox-counter]")
+	const lightboxClose = lightbox?.querySelector("[data-lightbox-close]")
+	const lightboxPrev = lightbox?.querySelector("[data-lightbox-prev]")
+	const lightboxNext = lightbox?.querySelector("[data-lightbox-next]")
+	let lightboxIndex = 0
 
 	function lightboxSizes(slug) {
-		const ratio = isLandscape(slug) ? 3 / 2 : 2 / 3;
-		const maxWidth = Math.min(window.innerWidth * 0.9, 1500);
-		const maxHeight = window.innerHeight * 0.74;
-		return `${Math.max(1, Math.round(Math.min(maxWidth, maxHeight * ratio)))}px`;
+		const ratio = isLandscape(slug) ? 3 / 2 : 2 / 3
+		const maxWidth = Math.min(window.innerWidth * 0.9, 1500)
+		const maxHeight = window.innerHeight * 0.74
+		return `${Math.max(1, Math.round(Math.min(maxWidth, maxHeight * ratio)))}px`
 	}
 
 	function renderLightbox() {
-		const photo = photos[lightboxIndex];
-		if (!photo || !lightbox || !lightboxImg) return;
+		const photo = photos[lightboxIndex]
+		if (!photo || !lightbox || !lightboxImg) return
 
-		const sizes = lightboxSizes(photo.slug);
-		lightbox.classList.remove("is-loaded");
+		const sizes = lightboxSizes(photo.slug)
+		lightbox.classList.remove("is-loaded")
 		if (lightboxPictureSource) {
-			lightboxPictureSource.srcset = webpSrcset(photo.slug);
-			lightboxPictureSource.sizes = sizes;
+			lightboxPictureSource.srcset = webpSrcset(photo.slug)
+			lightboxPictureSource.sizes = sizes
 		}
-		lightboxImg.src = `assets/photos/${photo.slug}-2400.jpg`;
-		lightboxImg.srcset = jpgSrcset(photo.slug);
-		lightboxImg.sizes = sizes;
-		lightboxImg.alt = photo.alt;
-		if (lightboxCaption) lightboxCaption.textContent = `${photo.caption}`;
-		if (lightboxCounter) lightboxCounter.textContent = `${photo.num} / ${photos.length}`;
+		lightboxImg.src = `assets/photos/${photo.slug}-2400.jpg`
+		lightboxImg.srcset = jpgSrcset(photo.slug)
+		lightboxImg.sizes = sizes
+		lightboxImg.alt = photo.alt
+		if (lightboxCaption) lightboxCaption.textContent = `${photo.caption}`
+		if (lightboxCounter) lightboxCounter.textContent = `${photo.num} / ${photos.length}`
 
-		lightboxImg.addEventListener("load", () => lightbox.classList.add("is-loaded"), { once: true });
-		if (lightboxImg.complete) lightbox.classList.add("is-loaded");
+		lightboxImg.addEventListener("load", () => lightbox.classList.add("is-loaded"), { once: true })
+		if (lightboxImg.complete) lightbox.classList.add("is-loaded")
 	}
 
 	function openLightbox(index) {
-		if (!lightbox) return;
-		lightboxIndex = (index + photos.length) % photos.length;
-		renderLightbox();
+		if (!lightbox) return
+		lightboxIndex = (index + photos.length) % photos.length
+		renderLightbox()
 		if (!lightbox.open) {
-			lightbox.showModal();
-			body.classList.add("is-locked");
+			lightbox.showModal()
+			body.classList.add("is-locked")
 		}
 	}
 
 	function stepLightbox(direction) {
-		openLightbox(lightboxIndex + direction);
+		openLightbox(lightboxIndex + direction)
 	}
 
-	lightboxClose?.addEventListener("click", () => lightbox.close());
-	lightboxPrev?.addEventListener("click", () => stepLightbox(-1));
-	lightboxNext?.addEventListener("click", () => stepLightbox(1));
-	lightbox?.addEventListener("close", () => body.classList.remove("is-locked"));
+	lightboxClose?.addEventListener("click", () => lightbox.close())
+	lightboxPrev?.addEventListener("click", () => stepLightbox(-1))
+	lightboxNext?.addEventListener("click", () => stepLightbox(1))
+	lightbox?.addEventListener("close", () => body.classList.remove("is-locked"))
 
 	// Arrow keys for the lightbox.
 	lightbox?.addEventListener("keydown", (event) => {
 		if (event.key === "ArrowLeft") {
-			event.preventDefault();
-			stepLightbox(-1);
+			event.preventDefault()
+			stepLightbox(-1)
 		} else if (event.key === "ArrowRight") {
-			event.preventDefault();
-			stepLightbox(1);
+			event.preventDefault()
+			stepLightbox(1)
 		}
-	});
+	})
 
 	// Touch swipe for the lightbox (photos are the main content on mobile).
 	if (lightbox) {
-		let touchStartX = 0;
-		let touchStartY = 0;
+		let touchStartX = 0
+		let touchStartY = 0
 
 		lightbox.addEventListener(
 			"touchstart",
 			(event) => {
-				const touch = event.changedTouches[0];
-				touchStartX = touch.clientX;
-				touchStartY = touch.clientY;
+				const touch = event.changedTouches[0]
+				touchStartX = touch.clientX
+				touchStartY = touch.clientY
 			},
 			{ passive: true },
-		);
+		)
 
 		lightbox.addEventListener(
 			"touchend",
 			(event) => {
-				const touch = event.changedTouches[0];
-				const dx = touch.clientX - touchStartX;
-				const dy = touch.clientY - touchStartY;
+				const touch = event.changedTouches[0]
+				const dx = touch.clientX - touchStartX
+				const dy = touch.clientY - touchStartY
 				if (Math.abs(dx) > 48 && Math.abs(dx) > Math.abs(dy)) {
-					stepLightbox(dx > 0 ? -1 : 1);
+					stepLightbox(dx > 0 ? -1 : 1)
 				}
 			},
 			{ passive: true },
-		);
+		)
 	}
 
 	/* ---------------------------------------------------------------------- */
@@ -518,29 +578,29 @@
 	 */
 	function refreshRenditionSizes() {
 		document.querySelectorAll(".stage__layer img").forEach((img) => {
-			const layer = img.closest(".stage__layer");
-			if (!layer) return;
-			const sizes = stageSizes(layer.dataset.photo);
-			img.sizes = sizes;
-			const source = img.closest("picture")?.querySelector("source");
-			if (source) source.sizes = sizes;
-		});
+			const layer = img.closest(".stage__layer")
+			if (!layer) return
+			const sizes = stageSizes(layer.dataset.photo)
+			img.sizes = sizes
+			const source = img.closest("picture")?.querySelector("source")
+			if (source) source.sizes = sizes
+		})
 
 		if (lightbox?.open && photos[lightboxIndex]) {
-			const sizes = lightboxSizes(photos[lightboxIndex].slug);
-			if (lightboxPictureSource) lightboxPictureSource.sizes = sizes;
-			if (lightboxImg) lightboxImg.sizes = sizes;
+			const sizes = lightboxSizes(photos[lightboxIndex].slug)
+			if (lightboxPictureSource) lightboxPictureSource.sizes = sizes
+			if (lightboxImg) lightboxImg.sizes = sizes
 		}
 	}
 
-	let renditionRefreshTimer = 0;
+	let renditionRefreshTimer = 0
 	const scheduleRenditionRefresh = () => {
-		window.clearTimeout(renditionRefreshTimer);
-		renditionRefreshTimer = window.setTimeout(refreshRenditionSizes, 140);
-	};
+		window.clearTimeout(renditionRefreshTimer)
+		renditionRefreshTimer = window.setTimeout(refreshRenditionSizes, 140)
+	}
 
-	window.addEventListener("resize", scheduleRenditionRefresh);
-	window.addEventListener("orientationchange", scheduleRenditionRefresh);
+	window.addEventListener("resize", scheduleRenditionRefresh)
+	window.addEventListener("orientationchange", scheduleRenditionRefresh)
 
 	/* ---------------------------------------------------------------------- */
 	/* Boot                                                                   */
@@ -552,28 +612,28 @@
 		const framesObserver = new IntersectionObserver(
 			(entries) => {
 				if (entries.some((entry) => entry.isIntersecting)) {
-					buildFrames();
-					framesObserver.disconnect();
+					buildFrames()
+					framesObserver.disconnect()
 				}
 			},
 			{ rootMargin: "900px 0px" },
-		);
-		framesObserver.observe(framesSection || track);
+		)
+		framesObserver.observe(framesSection || track)
 	} else {
-		buildFrames();
+		buildFrames()
 	}
 
 	// First paint: make the cover photograph visible immediately, then let the
 	// scroll manager take over.
-	const coverSection = sections[0];
+	const coverSection = sections[0]
 	if (coverSection) {
-		setActiveSection(coverSection, 0);
-		loadLayer(layerByKey.get(coverSection.dataset.layer));
+		setActiveSection(coverSection, 0)
+		loadLayer(layerByKey.get(coverSection.dataset.layer))
 	}
 
-	updateScrollUI();
+	updateScrollUI()
 
 	// A tiny safety net: if the browser restores an old scroll position, make
 	// sure the matching chapter is active after layout settles.
-	window.addEventListener("load", requestScrollUpdate, { once: true });
-})();
+	window.addEventListener("load", requestScrollUpdate, { once: true })
+})()
