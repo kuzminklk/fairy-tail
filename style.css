@@ -1175,6 +1175,39 @@ body.is-fast-scrolling .scene__caption {
 	border-color: var(--gold);
 }
 
+.footer__credit {
+	width: 100%;
+	max-width: var(--max-width);
+	margin: clamp(26px, 4.5vh, 44px) auto 0;
+	padding-top: clamp(14px, 2.2vh, 22px);
+	border-top: 1px solid var(--line);
+	font-family: var(--sans);
+	font-size: 0.58rem;
+	font-weight: 500;
+	line-height: 1.9;
+	letter-spacing: 0.06em;
+	color: var(--ink-3);
+}
+
+.footer__credit a {
+	color: var(--ink-2);
+	text-decoration: none;
+	border-bottom: 1px solid var(--line-strong);
+	transition:
+		color 0.3s var(--ease),
+		border-color 0.3s var(--ease);
+}
+
+.footer__credit a:hover {
+	color: var(--gold);
+	border-color: var(--gold);
+}
+
+.footer__credit-sep {
+	margin: 0 0.35em;
+	color: var(--line-strong);
+}
+
 /* 12. Chapter rail (right edge) */
 
 .chapter-rail {

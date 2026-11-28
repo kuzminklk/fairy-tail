@@ -42,6 +42,8 @@ ending, on one page.
 - Without JavaScript the whole poem is visible; photographs remain as blurred
   LQIP fields.
 - The epilogue leads into the frame filmstrip and footer.
+- The footer carries small credits linking to the “Digital Belarus” project,
+  the author’s personal website, and the GitHub source.
 
 ## Design notes
 
@@ -60,6 +62,8 @@ ending, on one page.
 - The poem is readable without JavaScript.
 - Chapter order, photograph mapping, captions, and screen-reader descriptions
   match the current poem.
+- Footer credits link to the Digital Belarus project, the author’s personal
+  website, and the GitHub source.
 - The page works at 320px, 390px, 768px, 1440px, and 2560px widths, including
   short landscape viewports.
 - Scrolling down and back up on a mobile viewport leaves the stage photograph

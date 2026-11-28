@@ -40,6 +40,9 @@ poetry over changing images, on screens from small phones to wide monitors.
   is dark but not a black wall, and scrolling into or out of it has no blank
   stage. The filmstrip deliberately mixes the original frame numbers instead of
   reading as a second chronological index.
+- Footer: a small sans-serif credit line carries the project relationship
+  (“Digital Belarus”), the author link, and the GitHub source; links use the
+  same quiet underline language as the rest of the footer.
 - Reduced motion: animation and smooth scrolling are suppressed; reveal
   content is shown immediately.
 - Accessibility: skip link, semantic headings, visible focus outlines, native
